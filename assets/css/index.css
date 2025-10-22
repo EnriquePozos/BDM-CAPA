@@ -1,0 +1,628 @@
+/* ==================== INDEX.CSS - SOLO PARA INDEX.HTML ==================== */
+/* Este archivo solo contiene estilos específicos de la página principal */
+/* Requiere: base.css (debe cargarse primero) */
+
+/* ==================== HERO SECTION CON VIDEO ==================== */
+.hero-section {
+    position: relative;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    padding: 80px 0 0 0;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0.3;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        rgba(0, 0, 0, 0.3) 50%, 
+        rgba(0, 0, 0, 0.5) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem 0;
+    max-width: 800px;
+}
+
+.hero-title {
+    font-size: 4.5rem;
+    font-family: var(--fwc-black);
+    font-weight: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    min-height: 150px;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    line-height: 1.7;
+}
+
+.hero-buttons {
+    margin-bottom: 3rem;
+}
+
+/* ==================== COUNTDOWN TIMER ==================== */
+.countdown-timer {
+    border-top: none;
+    padding-top: 0;
+    display: flex;
+    justify-content: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.countdown-item {
+    text-align: center;
+    background: rgba(97, 1, 235, 0.55);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 2rem 1.2rem;
+    min-width: 110px;
+    margin: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(90px);
+}
+
+.countdown-number {
+    display: block;
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+}
+
+/* ==================== FEATURED MUNDIALES SECTION ==================== */
+.featured-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    position: relative;
+    padding: 4rem 0;
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: 5rem;
+    font-family: var(--fwc-black);
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.section-subtitle {
+    font-size: 1.25rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+/* Mundial Cards */
+.mundial-card {
+    background: var(--primary-color);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+}
+
+.mundial-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--secondary-color);
+    box-shadow: 0 20px 40px rgba(97, 1, 235, 0.3);
+}
+
+.card-content {
+    position: relative;
+    z-index: 1;
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    transition: all 0.4s ease;
+}
+
+.mundial-card:hover .card-icon {
+    transform: scale(1.2) rotate(10deg);
+    box-shadow: 0 10px 20px rgba(63, 232, 198, 0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+.year {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(63, 232, 198, 0.3);
+}
+
+.country {
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+.mundial-card h5 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 1rem 0;
+    line-height: 1.3;
+}
+
+.card-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.card-button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: rgba(63, 232, 198, 0.1);
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.card-button:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(63, 232, 198, 0.3);
+}
+
+.btn-ver-todos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #fff;
+    color: var(--primary-color);
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-top: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.btn-ver-todos:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.btn-ver-todos i {
+    font-size: 1.3rem;
+}
+
+/* ==================== CTA SECTION ==================== */
+.cta-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 5rem 0;
+}
+
+.cta-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 24px;
+    padding: 4rem 3rem;
+    box-shadow: 0 30px 60px rgba(97, 1, 235, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Patrón de fondo animado */
+.cta-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.cta-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 10s ease-in-out infinite reverse;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.cta-text {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.cta-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+.feature-item i {
+    color: var(--secondary-color);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.cta-buttons {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-cta {
+    background: white;
+    color: var(--primary-color);
+    font-weight: 700;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.btn-cta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.cta-login {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.login-link {
+    color: white;
+    font-weight: 700;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+}
+
+.login-link:hover {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+/* ==================== ANIMACIONES ESPECÍFICAS DEL INDEX ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-content > * {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.hero-content > *:nth-child(1) { 
+    animation-delay: 0.1s; 
+}
+.hero-content > *:nth-child(2) { 
+    animation-delay: 0.2s; 
+}
+.hero-content > *:nth-child(3) { 
+    animation-delay: 0.3s; 
+}
+.hero-content > *:nth-child(4) { 
+    animation-delay: 0.4s; 
+}
+
+/* ==================== RESPONSIVE DESIGN (INDEX) ==================== */
+@media (max-width: 992px) {
+    .section-title {
+        font-size: 3.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+        min-height: auto;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-buttons {
+        text-align: center;
+    }
+    
+    .hero-buttons .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .countdown-timer {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .countdown-item {
+        min-width: 80px;
+        padding: 1.5rem 1rem;
+        margin: 0;
+    }
+    
+    .countdown-number {
+        font-size: 2rem;
+    }
+
+    .countdown-label {
+        font-size: 0.9rem;
+    }
+
+    .cta-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .cta-text {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .countdown-timer {
+        gap: 0.5rem;
+    }
+    
+    .countdown-item {
+        min-width: 70px;
+        padding: 1rem 0.5rem;
+    }
+
+    .countdown-number {
+        font-size: 1.8rem;
+    }
+
+    .countdown-label {
+        font-size: 0.8rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .mundial-card {
+        padding: 1.5rem;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .mundial-card h5 {
+        font-size: 1.5rem;
+    }
+
+    .card-description {
+        font-size: 1rem;
+    }
+
+    .year {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .country {
+        font-size: 1rem;
+    }
+
+    .btn-ver-todos {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+    }
+
+    .cta-title {
+        font-size: 1.5rem;
+    }
+
+    .cta-features {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* ==================== AJUSTES ESPECÍFICOS PARA INDEX ==================== */
+/* Container full-width para el hero */
+.hero-section .container-fluid {
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Asegurar que el video cubra toda la pantalla */
+.hero-section {
+    width: 100%;
+    position: relative;
+}
+
+/* Gradiente de texto para el título del hero */
+.hero-title {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Efectos hover para cards */
+.mundial-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+    z-index: 0;
+}
+
+.mundial-card:hover::before {
+    left: 100%;
+}
+
+/* Botón con efecto especial */
+.btn-outline-light {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    color: white;
+    transform: translateY(-3px);
+}
