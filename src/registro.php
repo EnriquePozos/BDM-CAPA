@@ -9,6 +9,12 @@
     <link href="assets/css/base.css" rel="stylesheet">
     <link href="assets/css/login.css" rel="stylesheet">
 </head>
+<?php
+// Iniciar sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
@@ -81,8 +87,22 @@
                                 <div class="step-label">Foto</div>
                             </div>
                         </div>
-
-                        <form id="registroForm" class="login-form">
+                        <!-- Mensajes de error/éxito -->
+                            <?php if(isset($_GET['error'])): ?>
+                                <div class="alert alert-danger alert-dismissible fade show position-fixed" style="top: 100px; right: 20px; z-index: 9999; min-width: 300px;">
+                                    <i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($_GET['error']); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if(isset($_GET['mensaje'])): ?>
+                                <div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 100px; right: 20px; z-index: 9999; min-width: 300px;">
+                                    <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($_GET['mensaje']); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            <?php endif; ?>
+                        <form id="registroForm" method="POST" action="../backend/api/auth.php" enctype="multipart/form-data" novalidate>
+                            <input type="hidden" name="accion" value="registrar">
                             <!-- PASO 1: Datos Personales -->
                             <div class="form-step active" data-step="1">
                                 <h5 class="step-title mb-4">
@@ -94,7 +114,7 @@
                                     <label for="nombreCompleto" class="form-label">
                                         <i class="fas fa-id-card me-2"></i>Nombre Completo *
                                     </label>
-                                    <input type="text" class="form-control form-control-lg" id="nombreCompleto" 
+                                    <input type="text" class="form-control form-control-lg" name="nombre" id="nombreCompleto"
                                            placeholder="Ej: Juan Pérez García" required>
                                     <div class="invalid-feedback">El nombre debe tener al menos 3 caracteres</div>
                                 </div>
@@ -104,7 +124,7 @@
                                     <label for="fechaNacimiento" class="form-label">
                                         <i class="fas fa-calendar me-2"></i>Fecha de Nacimiento *
                                     </label>
-                                    <input type="date" class="form-control form-control-lg" id="fechaNacimiento" required>
+                                    <input type="date" class="form-control form-control-lg" name="fecha_nacimiento" id="fechaNacimiento" required>
                                     <small class="form-text text-muted">Debes ser mayor de 12 años</small>
                                     <div class="invalid-feedback">Debes ser mayor de 12 años para registrarte</div>
                                 </div>
@@ -115,12 +135,11 @@
                                         <label for="genero" class="form-label">
                                             <i class="fas fa-venus-mars me-2"></i>Género *
                                         </label>
-                                        <select class="form-select form-control-lg" id="genero" required>
+                                        <select class="form-select form-control-lg" name="genero" id="genero" required>
                                             <option value="">Seleccionar...</option>
                                             <option value="Masculino">Masculino</option>
                                             <option value="Femenino">Femenino</option>
                                             <option value="Otro">Otro</option>
-                                            <option value="Prefiero no decir">Prefiero no decir</option>
                                         </select>
                                         <div class="invalid-feedback">Por favor selecciona tu género</div>
                                     </div>
@@ -130,7 +149,7 @@
                                         <label for="paisNacimiento" class="form-label">
                                             <i class="fas fa-globe-americas me-2"></i>País de Nacimiento *
                                         </label>
-                                        <select class="form-select form-control-lg" id="paisNacimiento" required>
+                                        <select class="form-select form-control-lg" name="pais_nacimiento" id="paisNacimiento" required>
                                             <option value="">Seleccionar...</option>
                                             <option value="Mexico">🇲🇽 México</option>
                                             <option value="Argentina">🇦🇷 Argentina</option>
@@ -150,7 +169,7 @@
                                     <label for="nacionalidad" class="form-label">
                                         <i class="fas fa-flag me-2"></i>Nacionalidad *
                                     </label>
-                                    <select class="form-select form-control-lg" id="nacionalidad" required>
+                                    <select class="form-select form-control-lg" name="nacionalidad" id="nacionalidad" required>
                                         <option value="">Seleccionar...</option>
                                         <option value="Mexicana">🇲🇽 Mexicana</option>
                                         <option value="Argentina">🇦🇷 Argentina</option>
@@ -180,7 +199,7 @@
                                     <label for="email" class="form-label">
                                         <i class="fas fa-at me-2"></i>Correo Electrónico *
                                     </label>
-                                    <input type="email" class="form-control form-control-lg" id="email" 
+                                    <input type="email" class="form-control form-control-lg" name="correo" id="email" 
                                            placeholder="ejemplo@correo.com" required>
                                     <div class="invalid-feedback">Por favor ingresa un correo válido</div>
                                 </div>
@@ -191,7 +210,7 @@
                                         <i class="fas fa-lock me-2"></i>Contraseña *
                                     </label>
                                     <div class="password-input-container">
-                                        <input type="password" class="form-control form-control-lg" id="password" 
+                                        <input type="password" class="form-control form-control-lg" name="contrasena" id="password" 
                                                placeholder="••••••••" required>
                                         <button type="button" class="password-toggle" id="togglePassword">
                                             <i class="fas fa-eye"></i>
@@ -217,7 +236,7 @@
                                         <i class="fas fa-lock me-2"></i>Confirmar Contraseña *
                                     </label>
                                     <div class="password-input-container">
-                                        <input type="password" class="form-control form-control-lg" id="confirmarPassword" 
+                                        <input type="password" class="form-control form-control-lg" name="confirmar_contrasena" id="confirmarPassword" 
                                                placeholder="••••••••" required>
                                         <button type="button" class="password-toggle" id="toggleConfirmPassword">
                                             <i class="fas fa-eye"></i>
@@ -251,7 +270,7 @@
                                         <label for="fotoUsuario" class="btn btn-outline-primary">
                                             <i class="fas fa-upload me-2"></i>Seleccionar Foto
                                         </label>
-                                        <input type="file" class="d-none" id="fotoUsuario" accept="image/*">
+                                        <input type="file" class="d-none" name="foto" id="fotoUsuario" accept="image/*">
                                         <button type="button" class="btn btn-outline-danger mt-2 d-none" id="removePhoto">
                                             <i class="fas fa-trash me-2"></i>Eliminar Foto
                                         </button>
@@ -263,7 +282,7 @@
 
                                 <!-- Términos y Condiciones -->
                                 <div class="form-check mb-4">
-                                    <input class="form-check-input" type="checkbox" id="terminos" required>
+                                    <input class="form-check-input" type="checkbox" name="terminos" id="terminos" required>
                                     <label class="form-check-label" for="terminos">
                                         Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">términos y condiciones</a> 
                                         y la <a href="#" data-bs-toggle="modal" data-bs-target="#privacidadModal">política de privacidad</a> *

@@ -65,6 +65,88 @@ class AuthController {
     }
 
     /**
+ * Procesar registro de nuevo usuario
+ */
+public function registrar() {
+    // Validar que vengan todos los datos requeridos
+    $camposRequeridos = ['nombre', 'correo', 'contrasena', 'pais_nacimiento', 'genero', 'nacionalidad', 'fecha_nacimiento'];
+    
+    foreach ($camposRequeridos as $campo) {
+        if (empty($_POST[$campo])) {
+            $this->redirectWithErrorRegistro('Todos los campos son obligatorios');
+            return;
+        }
+    }
+
+    // Obtener y limpiar datos
+    $datos = [
+        'nombre' => trim($_POST['nombre']),
+        'correo' => trim($_POST['correo']),
+        'contrasena' => trim($_POST['contrasena']),
+        'foto' => isset($_POST['foto']) ? trim($_POST['foto']) : 'default.jpg',
+        'pais_nacimiento' => trim($_POST['pais_nacimiento']),
+        'genero' => trim($_POST['genero']),
+        'nacionalidad' => trim($_POST['nacionalidad']),
+        'fecha_nacimiento' => trim($_POST['fecha_nacimiento']),
+        'tipo_usuario' => 0 // Por defecto usuario normal
+    ];
+
+    // Validar formato de correo
+    if (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+        $this->redirectWithErrorRegistro('Correo electrónico inválido');
+        return;
+    }
+
+    // Validar contraseña
+    if (strlen($datos['contrasena']) < 8) {
+        $this->redirectWithErrorRegistro('La contraseña debe tener mínimo 8 caracteres');
+        return;
+    }
+
+    if (!preg_match('/[A-Z]/', $datos['contrasena'])) {
+        $this->redirectWithErrorRegistro('La contraseña debe tener al menos una mayúscula');
+        return;
+    }
+
+    if (!preg_match('/[0-9]/', $datos['contrasena'])) {
+        $this->redirectWithErrorRegistro('La contraseña debe tener al menos un número');
+        return;
+    }
+
+    // Validar confirmación de contraseña (si existe)
+    if (isset($_POST['confirmar_contrasena'])) {
+        if ($datos['contrasena'] !== $_POST['confirmar_contrasena']) {
+            $this->redirectWithErrorRegistro('Las contraseñas no coinciden');
+            return;
+        }
+    }
+
+    // Intentar crear usuario
+    try {
+        $idUsuario = $this->usuarioModel->crear($datos);
+
+        if ($idUsuario) {
+            // Registro exitoso - Redirigir a login con mensaje
+            header('Location: ../../src/login.php?mensaje=Registro exitoso. Ya puedes iniciar sesión');
+            exit();
+        } else {
+            $this->redirectWithErrorRegistro('Error al crear el usuario. Intenta nuevamente');
+        }
+    } catch (Exception $e) {
+        // Si el correo ya existe, el SP lanzará un error
+        $this->redirectWithErrorRegistro('El correo electrónico ya está registrado');
+    }
+}
+
+/**
+ * Redireccionar con mensaje de error al registro
+ */
+private function redirectWithErrorRegistro($mensaje) {
+    header('Location: ../../src/registro.php?error=' . urlencode($mensaje));
+    exit();
+}
+
+    /**
      * Cerrar sesión
      */
     public function logout() {

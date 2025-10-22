@@ -9,7 +9,7 @@ $authController = new AuthController();
 // Determinar la acción según el método y parámetros
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Si viene la acción 'login' o no viene acción (por defecto es login)
+    // Si viene la acción en POST
     $accion = isset($_POST['accion']) ? $_POST['accion'] : 'login';
     
     switch ($accion) {
@@ -17,12 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $authController->login();
             break;
             
+        case 'registrar':
+            $authController->registrar();
+            break;
+            
         case 'logout':
             $authController->logout();
             break;
             
         default:
-            header('Location: /src/login.php?error=Acción no válida');
+            header('Location: ../../src/login.php?error=Acción no válida');
             exit();
     }
     
@@ -34,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($accion === 'logout') {
         $authController->logout();
     } else {
-        header('Location: /src/login.php');
+        header('Location: ../../src/login.php');
         exit();
     }
     

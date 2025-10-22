@@ -107,12 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==================== SUBMIT FORM ====================
-    if (registroForm) {
-        registroForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            procesarRegistro();
-        });
-    }
+
 
     // ==================== FUNCIONES DE VALIDACIÓN ====================
     
@@ -352,46 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==================== PROCESAR REGISTRO ====================
-    function procesarRegistro() {
-        // Validar términos y condiciones
-        const terminos = document.getElementById('terminos');
-        if (!terminos.checked) {
-            mostrarAlerta('Debes aceptar los términos y condiciones', 'warning');
-            terminos.focus();
-            return;
-        }
-
-        // Recolectar datos del formulario
-        const formData = {
-            nombreCompleto: document.getElementById('nombreCompleto').value.trim(),
-            fechaNacimiento: document.getElementById('fechaNacimiento').value,
-            genero: document.getElementById('genero').value,
-            paisNacimiento: document.getElementById('paisNacimiento').value,
-            nacionalidad: document.getElementById('nacionalidad').value,
-            email: document.getElementById('email').value.trim(),
-            password: document.getElementById('password').value,
-            foto: fotoUsuario.files[0] || null
-        };
-
-        console.log('Datos del registro:', formData);
-
-        // Mostrar loading
-        mostrarLoading(true);
-
-        // AQUÍ VA LA LLAMADA AL BACKEND
-        // registrarUsuario(formData)
-        
-        // Simulación de registro
-        setTimeout(() => {
-            mostrarLoading(false);
-            mostrarAlerta('¡Cuenta creada exitosamente! Redirigiendo...', 'success');
-            
-            // Redirigir al login después de 2 segundos
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
-        }, 2500);
-    }
+    
 
     // ==================== UTILIDADES ====================
     function mostrarLoading(mostrar) {
