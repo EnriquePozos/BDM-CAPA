@@ -11,30 +11,65 @@
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand" href="index.php">
-                <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
-            </a>
+    <?php
+// Iniciar sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si hay sesión activa
+$sesionActiva = isset($_SESSION['usuario_id']);
+?>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="index.php">
+            <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
+                </li>
+            </ul>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
+            <ul class="navbar-nav ms-auto" style="flex-direction: row;">
+                <?php if ($sesionActiva): ?>
+                    <!-- Usuario CON sesión activa -->
                     <li class="nav-item">
-                        <a class="nav-link active" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                        <span class="nav-link text-primary fw-bold">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>
+                        </span>
                     </li>
+                    
+                    <?php if ($_SESSION['usuario_tipo'] == 1): ?>
+                        <li class="nav-item">
+                            <a class="nav-link btn-outline-warning ms-2" href="dashboard-admin.php">
+                                <i class="fas fa-user-shield me-1"></i>Panel Admin
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
+                        <a class="nav-link btn-outline-danger ms-2" href="../backend/api/auth.php?accion=logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto" style="flex-direction: row;">
+                    
+                <?php else: ?>
+                    <!-- Usuario SIN sesión -->
                     <li class="nav-item">
                         <a class="nav-link btn-outline-primary ms-2" href="login.php">
                             <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
@@ -45,10 +80,11 @@
                             <i class="fas fa-user-plus me-1"></i>Registrarse
                         </a>
                     </li>
-                </ul>
-            </div>
+                <?php endif; ?>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Hero Section -->
     <section class="hero-section" id="hero-section">
