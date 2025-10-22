@@ -14,7 +14,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="index.php">
                 <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
             </a>
             
@@ -25,23 +25,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                     <li class="nav-item">
-                        <a class="nav-link active" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a>
+                        <a class="nav-link active" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="mundiales.html"><i class="fas fa-globe me-1"></i>Mundiales</a>
+                        <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="galeria.html"><i class="fas fa-images me-1"></i>Galería</a>
+                        <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" style="flex-direction: row;">
                     <li class="nav-item">
-                        <a class="nav-link btn-outline-primary ms-2" href="login.html">
+                        <a class="nav-link btn-outline-primary ms-2" href="login.php">
                             <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-primary text-white ms-2" href="registro.html">
+                        <a class="nav-link btn-primary text-white ms-2" href="registro.php">
                             <i class="fas fa-user-plus me-1"></i>Registrarse
                         </a>
                     </li>
@@ -101,10 +101,10 @@
                         </p>
                         
                         <div class="hero-buttons">
-                            <a href="mundiales.html" class="btn btn-primary btn-lg me-3" style="background:#6101eb; color:#fff; border:none;">
+                            <a href="mundiales.php" class="btn btn-primary btn-lg me-3" style="background:#6101eb; color:#fff; border:none;">
                                 <i class="fas fa-play me-2"></i>Explorar Mundiales
                             </a>
-                            <a href="galeria.html" class="btn btn-outline-light btn-lg">
+                            <a href="galeria.php" class="btn btn-outline-light btn-lg">
                                 <i class="fas fa-images me-2"></i>Ver Galería
                             </a>
                         </div>
@@ -185,7 +185,7 @@
             
             <!-- Ver Todos -->
             <div class="text-center mt-5">
-                <a href="mundiales.html" class="btn-ver-todos">
+                <a href="mundiales.php" class="btn-ver-todos">
                     <i class="fas fa-globe"></i>
                     Ver Todos los Mundiales
                 </a>
@@ -223,12 +223,12 @@
                     </div>
                     <div class="col-lg-4 text-center">
                         <div class="cta-buttons">
-                            <a href="login.html" class="btn btn-cta btn-lg mb-3">
+                            <a href="login.php" class="btn btn-cta btn-lg mb-3">
                                 <i class="fas fa-user-plus me-2"></i>Crear Cuenta Gratis
                             </a>
                             <p class="cta-login">
                                 ¿Ya tienes cuenta? 
-                                <a href="login.html" class="login-link">Inicia Sesión</a>
+                                <a href="login.php" class="login-link">Inicia Sesión</a>
                             </p>
                         </div>
                     </div>

@@ -13,7 +13,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="index.php">
                 <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
             </a>
             
@@ -24,23 +24,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a>
+                        <a class="nav-link" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="mundiales.html"><i class="fas fa-globe me-1"></i>Mundiales</a>
+                        <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="galeria.html"><i class="fas fa-images me-1"></i>Galería</a>
+                        <a class="nav-link active" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" style="flex-direction: row;">
                     <li class="nav-item">
-                        <a class="nav-link btn-outline-primary ms-2" href="login.html">
+                        <a class="nav-link btn-outline-primary ms-2" href="login.php">
                             <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-primary text-white ms-2" href="login.html">
+                        <a class="nav-link btn-primary text-white ms-2" href="login.php">
                             <i class="fas fa-user-plus me-1"></i>Registrarse
                         </a>
                     </li>

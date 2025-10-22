@@ -13,7 +13,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="index.php">
                 <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
             </a>
             
@@ -24,23 +24,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Inicio</a>
+                        <a class="nav-link" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="mundiales.html"><i class="fas fa-globe me-1"></i>Mundiales</a>
+                        <a class="nav-link active" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="galeria.html"><i class="fas fa-images me-1"></i>Galería</a>
+                        <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" style="flex-direction: row;">
                     <li class="nav-item">
-                        <a class="nav-link btn-outline-primary ms-2" href="login.html">
+                        <a class="nav-link btn-outline-primary ms-2" href="login.php">
                             <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn-primary text-white ms-2" href="login.html" style="background:#6101eb; color:#fff; border:none;">
+                        <a class="nav-link btn-primary text-white ms-2" href="login.php" style="background:#6101eb; color:#fff; border:none;">
                             <i class="fas fa-user-plus me-1"></i>Registrarse
                         </a>
                     </li>
@@ -125,7 +125,7 @@
             <div class="row g-4">
                 <!-- QATAR 2022 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=qatar2022" class="mundial-card-link">
+                    <a href="muro.php?mundial=qatar2022" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800" alt="Qatar 2022">
@@ -150,7 +150,7 @@
 
                 <!-- RUSIA 2018 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=rusia2018" class="mundial-card-link">
+                    <a href="muro.php?mundial=rusia2018" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800" alt="Rusia 2018">
@@ -175,7 +175,7 @@
 
                 <!-- BRASIL 2014 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=brasil2014" class="mundial-card-link">
+                    <a href="muro.php?mundial=brasil2014" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800" alt="Brasil 2014">
@@ -200,7 +200,7 @@
 
                 <!-- SUDÁFRICA 2010 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=sudafrica2010" class="mundial-card-link">
+                    <a href="muro.php?mundial=sudafrica2010" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800" alt="Sudáfrica 2010">
@@ -225,7 +225,7 @@
 
                 <!-- ALEMANIA 2006 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=alemania2006" class="mundial-card-link">
+                    <a href="muro.php?mundial=alemania2006" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800" alt="Alemania 2006">
@@ -250,7 +250,7 @@
 
                 <!-- MÉXICO 1986 -->
                 <div class="col-lg-4 col-md-6">
-                    <a href="muro.html?mundial=mexico1986" class="mundial-card-link">
+                    <a href="muro.php?mundial=mexico1986" class="mundial-card-link">
                         <div class="mundial-card">
                             <div class="mundial-image">
                                 <img src="https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=800" alt="México 1986">

@@ -13,12 +13,12 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="index.php">
                 <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px;">
             </a>
             <div class="ms-auto">
                 <span class="badge bg-danger me-3">ADMIN</span>
-                <a class="btn btn-sm btn-outline-primary" href="index.html">
+                <a class="btn btn-sm btn-outline-primary" href="index.php">
                     <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
                 </a>
             </div>
