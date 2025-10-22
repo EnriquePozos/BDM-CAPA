@@ -50,13 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ==================== SUBMIT LOGIN FORM ====================
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            procesarLogin();
-        });
-    }
+
 
     // ==================== FORGOT PASSWORD FORM ====================
     if (forgotPasswordForm) {
@@ -130,51 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==================== PROCESAR LOGIN ====================
-    function procesarLogin() {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        const rememberMe = document.getElementById('rememberMe').checked;
-        
-        // Validar campos
-        const emailValido = validarEmail(emailInput);
-        const passwordValido = validarPassword(passwordInput);
-        
-        if (!emailValido || !passwordValido) {
-            mostrarAlerta('Por favor corrige los errores en el formulario', 'warning');
-            return;
-        }
 
-        // Mostrar loading
-        mostrarLoading(true);
-
-        // Simular llamada a API (AQUÍ VA LA LLAMADA REAL AL BACKEND)
-        setTimeout(() => {
-            // Simulación de login exitoso
-            const loginExitoso = true; // Cambiar según respuesta del servidor
-            
-            if (loginExitoso) {
-                // Guardar sesión si "Recordarme" está marcado
-                if (rememberMe) {
-                    localStorage.setItem('rememberUser', email);
-                }
-                
-                // Guardar datos de sesión
-                sessionStorage.setItem('userLoggedIn', 'true');
-                sessionStorage.setItem('userEmail', email);
-                
-                mostrarLoading(false);
-                mostrarAlerta('¡Bienvenido de vuelta! Iniciando sesión...', 'success');
-                
-                // Redirigir a mundiales después de 1.5 segundos
-                setTimeout(() => {
-                    window.location.href = 'mundiales.html';
-                }, 1500);
-            } else {
-                mostrarLoading(false);
-                mostrarAlerta('Correo o contraseña incorrectos', 'danger');
-            }
-        }, 2000);
-    }
 
     // ==================== PROCESAR RECUPERACIÓN DE CONTRASEÑA ====================
     function procesarRecuperacion() {

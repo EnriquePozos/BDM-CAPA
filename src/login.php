@@ -64,13 +64,20 @@
                             <p class="login-subtitle">Accede a tu cuenta para contribuir con contenido</p>
                         </div>
 
-                        <form id="loginForm" class="login-form">
+                        <?php if(isset($_GET['error'])): ?>
+                        <div style="color: red; background-color: #ffe6e6; padding: 10px; border: 1px solid red; border-radius: 5px; margin-bottom: 15px;">
+                                <?php echo htmlspecialchars($_GET['error']); ?>
+                        </div>
+                        <?php endif; ?>
+
+
+                        <form id="loginForm" class="login-form" method="post" action ="../backend/api/auth.php">
                             <!-- Email Input -->
                             <div class="form-group mb-3">
                                 <label for="email" class="form-label">
                                     <i class="fas fa-envelope me-2"></i>Correo Electrónico
                                 </label>
-                                <input type="email" class="form-control form-control-lg" id="email" 
+                                <input type="email" class="form-control form-control-lg" id="email" name="correo"
                                        placeholder="ejemplo@correo.com" required>
                                 <div class="invalid-feedback">
                                     Por favor ingresa un correo válido
@@ -83,7 +90,7 @@
                                     <i class="fas fa-lock me-2"></i>Contraseña
                                 </label>
                                 <div class="password-input-container">
-                                    <input type="password" class="form-control form-control-lg" id="password" 
+                                    <input type="password" class="form-control form-control-lg" id="password"  name = "contrasena"
                                            placeholder="••••••••" required>
                                     <button type="button" class="password-toggle" id="togglePassword">
                                         <i class="fas fa-eye"></i>
