@@ -2,8 +2,7 @@
 require_once __DIR__ . '/../config/Database.php';
 
 /**
- * Modelo Usuario
- * Ejecuta los Stored Procedures relacionados con usuarios
+ * Modelo Usuario 
  */
 class Usuario {
     
