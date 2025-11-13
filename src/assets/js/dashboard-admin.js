@@ -6,37 +6,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // ==================== NAVIGATION BETWEEN SECTIONS ====================
-    const menuItems = document.querySelectorAll('.menu-item');
-    const contentSections = document.querySelectorAll('.content-section');
-    
-    // Handle menu item clicks
-    menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all menu items
-            menuItems.forEach(mi => mi.classList.remove('active'));
-            
-            // Add active class to clicked item
-            this.classList.add('active');
-            
-            // Hide all content sections
-            contentSections.forEach(section => section.classList.remove('active'));
-            
-            // Show the selected section
-            const sectionId = this.getAttribute('data-section');
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.classList.add('active');
-                
-                // Scroll to top of content
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
+    // ELIMINADO: El código que manejaba los clicks en menu-item
+    // Ahora los links funcionan normalmente con href="?seccion=X" y PHP controla qué mostrar
     
     // ==================== QUICK ACTION CARDS ====================
     const actionCards = document.querySelectorAll('.action-card[data-goto]');
@@ -47,13 +18,26 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const targetSection = this.getAttribute('data-goto');
             
-            // Find the corresponding menu item and click it
-            const targetMenuItem = document.querySelector(`.menu-item[data-section="${targetSection}"]`);
-            if (targetMenuItem) {
-                targetMenuItem.click();
-            }
+            // Navegar a la URL con el parámetro de sección
+            window.location.href = `?seccion=${targetSection}`;
         });
     });
+    
+    // ==================== SEARCH FUNCTIONALITY ====================
+    const searchInput = document.querySelector('.search-box input');
+    
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const searchTerm = this.value.toLowerCase();
+            
+            searchTimeout = setTimeout(() => {
+                console.log('Buscando:', searchTerm);
+                // Aquí implementarías la lógica de búsqueda real
+            }, 300);
+        });
+    }
     
     // ==================== FILTER TABS ====================
     const filterTabs = document.querySelectorAll('.tab-item');
@@ -215,19 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ==================== SEARCH FUNCTIONALITY ====================
-    const searchInput = document.querySelector('.search-box input');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            console.log('Buscando:', searchTerm);
-            
-            // Here you would implement the actual search logic
-            // For now, just log the search term
-        });
-    }
-    
     // ==================== FORM SELECT CHANGES ====================
     const filterSelects = document.querySelectorAll('.header-actions select, .section-header select');
     
@@ -263,151 +234,31 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.classList.add('show');
         }, 100);
         
-        // Close button
-        const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.addEventListener('click', () => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        });
-        
         // Auto hide after 3 seconds
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         }, 3000);
+        
+        // Close button
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        });
     }
     
     function getNotificationIcon(type) {
-        switch(type) {
-            case 'success': return 'check-circle';
-            case 'danger': return 'times-circle';
-            case 'warning': return 'exclamation-triangle';
-            case 'info': return 'info-circle';
-            default: return 'info-circle';
-        }
+        const icons = {
+            'success': 'check-circle',
+            'danger': 'exclamation-circle',
+            'warning': 'exclamation-triangle',
+            'info': 'info-circle'
+        };
+        return icons[type] || 'info-circle';
     }
     
-    // Add notification styles dynamically
-    const notificationStyles = `
-        <style>
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                z-index: 9999;
-                transform: translateX(400px);
-                opacity: 0;
-                transition: all 0.3s ease;
-                min-width: 300px;
-            }
-            
-            .notification.show {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            
-            .notification i {
-                font-size: 1.5rem;
-            }
-            
-            .notification-success {
-                border-left: 4px solid #10b981;
-            }
-            
-            .notification-success i {
-                color: #10b981;
-            }
-            
-            .notification-danger {
-                border-left: 4px solid #ef4444;
-            }
-            
-            .notification-danger i {
-                color: #ef4444;
-            }
-            
-            .notification-warning {
-                border-left: 4px solid #f59e0b;
-            }
-            
-            .notification-warning i {
-                color: #f59e0b;
-            }
-            
-            .notification-info {
-                border-left: 4px solid #3b82f6;
-            }
-            
-            .notification-info i {
-                color: #3b82f6;
-            }
-            
-            .notification span {
-                flex: 1;
-                color: #1f2937;
-                font-weight: 600;
-            }
-            
-            .notification-close {
-                background: none;
-                border: none;
-                font-size: 1.5rem;
-                color: #6b7280;
-                cursor: pointer;
-                padding: 0;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: color 0.3s ease;
-            }
-            
-            .notification-close:hover {
-                color: #1f2937;
-            }
-            
-            @media (max-width: 576px) {
-                .notification {
-                    right: 10px;
-                    left: 10px;
-                    min-width: auto;
-                }
-            }
-        </style>
-    `;
-    
-    document.head.insertAdjacentHTML('beforeend', notificationStyles);
-    
-    // ==================== ANIMATION ON SCROLL ====================
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-    
-    // Observe stat cards
-    document.querySelectorAll('.stat-card').forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = `all 0.5s ease ${index * 0.1}s`;
-        observer.observe(card);
-    });
+    // Make notification function available globally
+    window.showNotification = showNotification;
     
     // ==================== TABLE ROW HOVER EFFECTS ====================
     const tableRows = document.querySelectorAll('.table tbody tr');
@@ -432,6 +283,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Reset on form submit
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', () => {
+            formChanged = false;
+        });
+    });
+    
     window.addEventListener('beforeunload', (e) => {
         if (formChanged) {
             e.preventDefault();
@@ -441,16 +300,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ==================== KEYBOARD SHORTCUTS ====================
     document.addEventListener('keydown', function(e) {
-        // Alt + 1-7 para navegar entre secciones
-        if (e.altKey && e.key >= '1' && e.key <= '7') {
-            e.preventDefault();
-            const index = parseInt(e.key) - 1;
-            const menuItem = menuItems[index];
-            if (menuItem) {
-                menuItem.click();
-            }
-        }
-        
         // Ctrl + F para buscar
         if (e.ctrlKey && e.key === 'f' && searchInput) {
             e.preventDefault();
@@ -474,8 +323,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ==================== CONSOLE LOG ====================
     console.log('%c Dashboard Admin Loaded Successfully! ', 'background: linear-gradient(135deg, #6101EB, #B604DC); color: white; font-size: 16px; padding: 10px; border-radius: 5px;');
-    console.log('%c Keyboard Shortcuts:', 'font-weight: bold; font-size: 14px;');
-    console.log('Alt + 1-7: Navigate between sections');
+    console.log('%c Navigation is handled by PHP with URL parameters', 'font-size: 12px; color: #6101EB;');
+    console.log('Keyboard Shortcuts:');
     console.log('Ctrl + F: Focus search');
     
 });

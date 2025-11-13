@@ -90,5 +90,103 @@ class Usuario {
             return false;
         }
     }
+    /**
+     * Listar todos los usuarios
+     * 
+     * @return array|false Array con usuarios o false si hay error
+     */
+    public function listarTodos() {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Preparar llamada al stored procedure
+            $stmt = $conn->prepare("CALL sp_usuario_listar()");
+            
+            // Ejecutar
+            $stmt->execute();
+            
+            // Obtener resultados
+            $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Cerrar cursor para liberar la conexión
+            $stmt->closeCursor();
+            
+            return $usuarios;
+            
+        } catch (PDOException $e) {
+            error_log("Error en listarTodos(): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualizar datos de un usuario
+     * 
+     * @param int $id ID del usuario
+     * @param array $datos Array asociativo con los datos a actualizar
+     * @return bool True si éxito, false si error
+     */
+    public function actualizar($id, $datos) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Preparar llamada al stored procedure
+            // sp_usuario_actualizar(id, nombre, correo, pais, genero, nacionalidad, fecha_nac, tipo_usuario, activo)
+            $stmt = $conn->prepare("CALL sp_usuario_actualizar(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            
+            // Bindear parámetros
+            $stmt->bindParam(1, $id, PDO::PARAM_INT);
+            $stmt->bindParam(2, $datos['nombre'], PDO::PARAM_STR);
+            $stmt->bindParam(3, $datos['correo'], PDO::PARAM_STR);
+            $stmt->bindParam(4, $datos['pais_nacimiento'], PDO::PARAM_STR);
+            $stmt->bindParam(5, $datos['genero'], PDO::PARAM_STR);
+            $stmt->bindParam(6, $datos['nacionalidad'], PDO::PARAM_STR);
+            $stmt->bindParam(7, $datos['fecha_nacimiento'], PDO::PARAM_STR);
+            $stmt->bindParam(8, $datos['tipo_usuario'], PDO::PARAM_INT);
+            $stmt->bindParam(9, $datos['activo'], PDO::PARAM_INT);
+            
+            // Ejecutar
+            $resultado = $stmt->execute();
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $resultado;
+            
+        } catch (PDOException $e) {
+            error_log("Error en actualizar(): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Eliminar (soft delete) un usuario
+     * 
+     * @param int $id ID del usuario
+     * @return bool True si éxito, false si error
+     */
+    public function eliminar($id) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Preparar llamada al stored procedure
+            $stmt = $conn->prepare("CALL sp_usuario_eliminar(?)");
+            
+            // Bindear parámetro
+            $stmt->bindParam(1, $id, PDO::PARAM_INT);
+            
+            // Ejecutar
+            $resultado = $stmt->execute();
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $resultado;
+            
+        } catch (PDOException $e) {
+            error_log("Error en eliminar(): " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
