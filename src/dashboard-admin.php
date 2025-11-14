@@ -348,21 +348,20 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                                     </td>
                                                     <td>
                                                         <!-- Botón Editar -->
-                                                        <button type="button" class="btn btn-sm btn-warning" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editarUsuarioModal"
-                                                                data-id="<?php echo $usuario['id_Usuario']; ?>"
-                                                                data-nombre="<?php echo htmlspecialchars($usuario['Nombre']); ?>"
-                                                                data-correo="<?php echo htmlspecialchars($usuario['Correo']); ?>"
-                                                                data-pais="<?php echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : ''; ?>"
-                                                                data-nacionalidad="<?php echo isset($usuario['Nacionalidad']) ? htmlspecialchars($usuario['Nacionalidad']) : ''; ?>"
-                                                                data-genero="<?php echo isset($usuario['Genero']) ? htmlspecialchars($usuario['Genero']) : 'Masculino'; ?>"
-                                                                data-fecha="<?php echo isset($usuario['Fecha_Nacimiento']) ? $usuario['Fecha_Nacimiento'] : ''; ?>"
-                                                                data-tipo="<?php echo $usuario['Tipo_Usuario']; ?>"
-                                                                data-activo="<?php echo $usuario['Activo']; ?>"
-                                                                title="Editar">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
+<button type="button" class="btn btn-sm btn-warning" 
+        data-bs-toggle="modal" 
+        data-bs-target="#editarUsuarioModal"
+        data-id="<?php echo $usuario['id_Usuario']; ?>"
+        data-nombre="<?php echo htmlspecialchars($usuario['Nombre']); ?>"
+        data-correo="<?php echo htmlspecialchars($usuario['Correo']); ?>"
+        data-pais="<?php echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : ''; ?>"
+        data-nacionalidad="<?php echo isset($usuario['Nacionalidad']) ? htmlspecialchars($usuario['Nacionalidad']) : ''; ?>"
+        data-genero="<?php echo isset($usuario['Genero']) ? htmlspecialchars($usuario['Genero']) : 'Masculino'; ?>"
+        data-fecha="<?php echo isset($usuario['Fecha_Nacimiento']) ? $usuario['Fecha_Nacimiento'] : ''; ?>"
+        data-tipo="<?php echo $usuario['Tipo_Usuario']; ?>"
+        data-activo="<?php echo $usuario['Activo']; ?>">
+    <i class="fas fa-edit"></i>
+</button>
                                                         
                                                         <!-- Botón Eliminar -->
                                                         <?php if ($usuario['id_Usuario'] != $_SESSION['usuario_id']): ?>
@@ -464,12 +463,13 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </div>
                             
                             <!-- Correo -->
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="fas fa-envelope me-1"></i>Correo Electrónico
-                                </label>
-                                <input type="email" class="form-control" name="correo" id="edit_correo" required>
-                            </div>
+<div class="col-md-6">
+    <label class="form-label">
+        <i class="fas fa-envelope me-1"></i>Correo Electrónico
+        <small class="text-muted">(No editable)</small>
+    </label>
+    <input type="email" class="form-control" name="correo" id="edit_correo" readonly required style="background-color: #f8f9fa; cursor: not-allowed;">
+</div>
                             
                             <!-- País de Nacimiento -->
                             <div class="col-md-6">
@@ -544,6 +544,7 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
     </div>
 
     <!-- Footer -->
+<!-- Footer -->
     <footer class="footer pb-2 pt-4" id="main-footer">
         <div class="container-fluid px-4">
             <div class="row">
@@ -565,44 +566,70 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/dashboard-admin.js"></script>
+    
+    <!-- Modal Handler Script -->
     <script>
-    // Poblar modal de edición con datos del usuario
-    document.getElementById('editarUsuarioModal').addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
+    console.log('Script modal iniciado');
+    
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded');
         
-        // Obtener datos del botón
-        const id = button.getAttribute('data-id');
-        const nombre = button.getAttribute('data-nombre');
-        const correo = button.getAttribute('data-correo');
-        const pais = button.getAttribute('data-pais');
-        const nacionalidad = button.getAttribute('data-nacionalidad');
-        const genero = button.getAttribute('data-genero');
-        const fecha = button.getAttribute('data-fecha');
-        const tipo = button.getAttribute('data-tipo');
-        const activo = button.getAttribute('data-activo');
+        const modalElement = document.getElementById('editarUsuarioModal');
+        console.log('Modal element:', modalElement);
         
-        // Llenar el formulario
-        document.getElementById('edit_id_usuario').value = id;
-        document.getElementById('edit_nombre').value = nombre;
-        document.getElementById('edit_correo').value = correo;
-        document.getElementById('edit_pais').value = pais;
-        document.getElementById('edit_nacionalidad').value = nacionalidad;
-        document.getElementById('edit_genero').value = genero;
-        document.getElementById('edit_fecha').value = fecha;
-        document.getElementById('edit_tipo').value = tipo;
-        document.getElementById('edit_activo').value = activo;
+        if (modalElement) {
+            modalElement.addEventListener('show.bs.modal', function (event) {
+                console.log('Modal show event triggered');
+                const button = event.relatedTarget;
+                
+                if (button) {
+                    // Obtener datos del botón
+                    const id = button.getAttribute('data-id');
+                    const nombre = button.getAttribute('data-nombre');
+                    const correo = button.getAttribute('data-correo');
+                    const pais = button.getAttribute('data-pais');
+                    const nacionalidad = button.getAttribute('data-nacionalidad');
+                    const genero = button.getAttribute('data-genero');
+                    const fecha = button.getAttribute('data-fecha');
+                    const tipo = button.getAttribute('data-tipo');
+                    const activo = button.getAttribute('data-activo');
+                    
+                    console.log('Datos:', {id, nombre, correo});
+                    
+                    // Llenar el formulario
+                    document.getElementById('edit_id_usuario').value = id || '';
+                    document.getElementById('edit_nombre').value = nombre || '';
+                    document.getElementById('edit_correo').value = correo || '';
+                    document.getElementById('edit_pais').value = pais || '';
+                    document.getElementById('edit_nacionalidad').value = nacionalidad || '';
+                    document.getElementById('edit_genero').value = genero || 'Masculino';
+                    document.getElementById('edit_fecha').value = fecha || '';
+                    document.getElementById('edit_tipo').value = tipo || '0';
+                    document.getElementById('edit_activo').value = activo || '1';
+                    
+                    console.log('Formulario llenado');
+                }
+            });
+            console.log('Event listener agregado');
+        }
+        
+        // Auto-cerrar alertas después de 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            });
+        }, 5000);
     });
-
-    // Auto-cerrar alertas después de 5 segundos
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert-dismissible');
-        alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
     </script>
+    
+    <!-- Dashboard Admin JS -->
+    <script src="assets/js/dashboard-admin.js"></script>
 </body>
 </html>
