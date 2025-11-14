@@ -21,6 +21,13 @@ $usuarioController = new UsuarioController();
 // Obtener lista de usuarios
 $usuarios = $usuarioController->listar();
 
+// Cargar controlador de categorías
+require_once __DIR__ . '/../backend/controllers/CategoriaControler.php';
+$categoriaController = new CategoriaController();
+
+// Obtener lista de categorías
+$categorias = $categoriaController->listar();
+
 // Determinar qué sección mostrar
 $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
 ?>
@@ -98,6 +105,14 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
 </nav>
 
 <!-- Mensajes de éxito/error -->
+<?php if(isset($_GET['exito'])): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;">
+        <i class="fas fa-check-circle me-2"></i>
+        <?php echo htmlspecialchars($_GET['exito']); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
 <?php if(isset($_GET['success'])): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;">
         <i class="fas fa-check-circle me-2"></i>
@@ -297,46 +312,30 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php if (!empty($usuarios)): ?>
+                                        <?php if ($usuarios && count($usuarios) > 0): ?>
                                             <?php foreach ($usuarios as $usuario): ?>
                                                 <tr>
                                                     <td>
-                                                        <div class="user-info-cell">
-                                                            <div class="user-avatar-sm">
-                                                                <?php 
-                                                                $nombre = htmlspecialchars($usuario['Nombre']);
-                                                                $iniciales = '';
-                                                                $palabras = explode(' ', $nombre);
-                                                                foreach ($palabras as $palabra) {
-                                                                    if (!empty($palabra)) {
-                                                                        $iniciales .= strtoupper(substr($palabra, 0, 1));
-                                                                        if (strlen($iniciales) >= 2) break;
-                                                                    }
-                                                                }
-                                                                echo $iniciales;
-                                                                ?>
+                                                        <div class="user-info">
+                                                            <div class="user-avatar-small">
+                                                                <?php echo strtoupper(substr($usuario['Nombre'], 0, 2)); ?>
                                                             </div>
-                                                            <span><?php echo $nombre; ?></span>
+                                                            <div>
+                                                                <strong><?php echo htmlspecialchars($usuario['Nombre']); ?></strong>
+                                                                <?php if ($usuario['Tipo_Usuario'] == 1): ?>
+                                                                    <span class="badge bg-warning ms-1">Admin</span>
+                                                                <?php endif; ?>
+                                                            </div>
                                                         </div>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
+                                                    <td><?php echo htmlspecialchars($usuario['Pais_Nacimiento'] ?? 'N/A'); ?></td>
+                                                    <td><?php echo date('d/m/Y', strtotime($usuario['Fecha_Registro'])); ?></td>
+                                                    <td><span class="badge bg-secondary">0</span></td>
                                                     <td>
-                                                        <?php 
-                                                        // Manejo seguro del campo País
-                                                        echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : 'N/A'; 
-                                                        ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php 
-                                                        $fecha = new DateTime($usuario['Fecha_Registro']);
-                                                        echo $fecha->format('d/m/Y'); 
-                                                        ?>
-                                                    </td>
-                                                    <td><span class="badge bg-primary">0</span></td>
-                                                    <td>
-                                                        <?php if ($usuario['Activo'] == 1): ?>
+                                                        <?php if ($usuario['Activo']): ?>
                                                             <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox" checked disabled>
+                                                                <input class="form-check-input" type="checkbox" checked>
                                                                 <label class="form-check-label status-active">Activo</label>
                                                             </div>
                                                         <?php else: ?>
@@ -402,14 +401,37 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                     <i class="fas fa-folder-open"></i>
                                     Gestionar Categorías
                                 </h3>
-                                <button class="btn btn-primary">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal">
                                     <i class="fas fa-plus"></i> Nueva Categoría
                                 </button>
                             </div>
 
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                La gestión de categorías estará disponible próximamente.
+                            <!-- Categories Grid -->
+                            <div class="row g-4">
+                                <?php if ($categorias && count($categorias) > 0): ?>
+                                    <?php foreach ($categorias as $categoria): ?>
+                                    <div class="col-md-6 col-lg-4 col-xl-3">
+                                        <div class="category-card">
+                                            <div class="category-icon">
+                                                <i class="fas fa-folder"></i>
+                                            </div>
+                                            <h5><?php echo htmlspecialchars($categoria['Nombre']); ?></h5>
+                                            <div class="category-stats">
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-images me-1"></i>0 publicaciones
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No hay categorías registradas. Crea una nueva categoría para comenzar.
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </section>
 
@@ -434,6 +456,52 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                         </section>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Categoría -->
+    <div class="modal fade" id="crearCategoriaModal" tabindex="-1" aria-labelledby="crearCategoriaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="../backend/api/categorias.php" method="POST">
+                    <input type="hidden" name="accion" value="crear">
+                    
+                    <div class="modal-header" style="background: linear-gradient(135deg, #6101EB, #FF0050); color: white;">
+                        <h5 class="modal-title" id="crearCategoriaLabel">
+                            <i class="fas fa-folder-plus me-2"></i>Nueva Categoría
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nombre_categoria" class="form-label">
+                                <i class="fas fa-tag me-1"></i>Nombre de la Categoría
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="nombre_categoria" 
+                                name="nombre" 
+                                placeholder="Ej: Goles Memorables, Jugadores Legendarios..."
+                                minlength="3"
+                                maxlength="100"
+                                required
+                            >
+                            <div class="form-text">Mínimo 3 caracteres, máximo 100</div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Crear Categoría
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -544,7 +612,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
     </div>
 
     <!-- Footer -->
-<!-- Footer -->
     <footer class="footer pb-2 pt-4" id="main-footer">
         <div class="container-fluid px-4">
             <div class="row">
