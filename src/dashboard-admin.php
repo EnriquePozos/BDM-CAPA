@@ -28,6 +28,13 @@ $categoriaController = new CategoriaController();
 // Obtener lista de categorías
 $categorias = $categoriaController->listar();
 
+// Cargar controlador de mundiales
+require_once __DIR__ . '/../backend/controllers/MundialController.php';
+$mundialController = new MundialController();
+
+// Obtener lista de mundiales
+$mundiales = $mundialController->listar();
+
 // Determinar qué sección mostrar
 $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
 ?>
@@ -43,30 +50,24 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/dashboard-admin.css">
     <style>
-        /* Estilo para scroll horizontal en tabla responsive */
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-        
-        /* Asegurar que la tabla mantenga su ancho mínimo */
         .table-responsive table {
             min-width: 900px;
         }
     </style>
 </head>
 <body>
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid px-4">
         <a class="navbar-brand" href="index.php">
             <img src="assets/logov3.png" alt="Logo FIFA Mundiales" style="height: 48px; vertical-align: middle;">
         </a>
-        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                 <li class="nav-item">
@@ -79,7 +80,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                     <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
                 </li>
             </ul>
-            
             <ul class="navbar-nav ms-auto" style="flex-direction: row;">
                 <li class="nav-item">
                     <span class="nav-link text-primary fw-bold">
@@ -87,13 +87,11 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                         <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>
                     </span>
                 </li>
-                
                 <li class="nav-item">
                     <a class="nav-link btn-outline-warning ms-2" href="dashboard-admin.php">
                         <i class="fas fa-user-shield me-1"></i>Panel Admin
                     </a>
                 </li>
-                
                 <li class="nav-item">
                     <a class="nav-link btn-outline-danger ms-2" href="../backend/api/auth.php?accion=logout">
                         <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
@@ -104,7 +102,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
     </div>
 </nav>
 
-<!-- Mensajes de éxito/error -->
 <?php if(isset($_GET['exito'])): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;">
         <i class="fas fa-check-circle me-2"></i>
@@ -129,14 +126,11 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
     </div>
 <?php endif; ?>
 
-    <!-- Dashboard Container -->
     <div class="dashboard-container">
         <div class="container">
             <div class="row">
-                <!-- Sidebar -->
                 <div class="col-lg-3">
                     <div class="dashboard-sidebar">
-                        <!-- User Profile Card -->
                         <div class="user-profile-card">
                             <div class="profile-avatar">
                                 <i class="fas fa-user-shield"></i>
@@ -145,7 +139,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             <span class="profile-role">Administrador</span>
                         </div>
 
-                        <!-- Sidebar Menu -->
                         <nav class="sidebar-menu">
                             <a href="?seccion=overview" class="menu-item <?php echo $seccionActiva === 'overview' ? 'active' : ''; ?>">
                                 <i class="fas fa-chart-line"></i>
@@ -175,11 +168,9 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                     </div>
                 </div>
 
-                <!-- Main Content -->
                 <div class="col-lg-9">
                     <div class="dashboard-content">
                         
-                        <!-- Overview Section -->
                         <section id="overview" class="content-section <?php echo $seccionActiva === 'overview' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
@@ -192,7 +183,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                 </span>
                             </div>
 
-                            <!-- Welcome Alert -->
                             <div class="welcome-alert">
                                 <div class="welcome-icon">
                                     <i class="fas fa-hand-sparkles"></i>
@@ -203,7 +193,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                 </div>
                             </div>
 
-                            <!-- Quick Actions -->
                             <h4 class="section-subtitle">
                                 <i class="fas fa-bolt"></i>
                                 Acciones Rápidas
@@ -244,7 +233,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </div>
                         </section>
 
-                        <!-- Publicaciones Section -->
                         <section id="publicaciones" class="content-section <?php echo $seccionActiva === 'publicaciones' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
@@ -267,25 +255,71 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </div>
                         </section>
 
-                        <!-- Mundiales Section -->
                         <section id="mundiales" class="content-section <?php echo $seccionActiva === 'mundiales' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
                                     <i class="fas fa-globe-americas"></i>
                                     Gestionar Mundiales
                                 </h3>
-                                <button class="btn btn-primary">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearMundialModal">
                                     <i class="fas fa-plus"></i> Nuevo Mundial
                                 </button>
                             </div>
 
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                La gestión de mundiales estará disponible próximamente.
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Año</th>
+                                            <th>Nombre</th>
+                                            <th>Sede</th>
+                                            <th>Descripción</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if ($mundiales && count($mundiales) > 0): ?>
+                                            <?php foreach ($mundiales as $mundial): ?>
+                                                <tr>
+                                                    <td><strong><?php echo htmlspecialchars($mundial['Anio']); ?></strong></td>
+                                                    <td><?php echo htmlspecialchars($mundial['Nombre']); ?></td>
+                                                    <td>
+                                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                                        <?php echo htmlspecialchars($mundial['Sede']); ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php 
+                                                        $desc = $mundial['Descripcion'];
+                                                        echo $desc ? (strlen($desc) > 50 ? substr(htmlspecialchars($desc), 0, 50) . '...' : htmlspecialchars($desc)) : '<span class="text-muted">Sin descripción</span>';
+                                                        ?>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#editarMundialModal"
+                                                                data-id="<?php echo $mundial['id_Mundial']; ?>"
+                                                                data-nombre="<?php echo htmlspecialchars($mundial['Nombre']); ?>"
+                                                                data-anio="<?php echo $mundial['Anio']; ?>"
+                                                                data-sede="<?php echo htmlspecialchars($mundial['Sede']); ?>"
+                                                                data-descripcion="<?php echo htmlspecialchars($mundial['Descripcion'] ?? ''); ?>">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted py-4">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    No hay mundiales registrados. Crea uno nuevo para comenzar.
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </section>
 
-                        <!-- Usuarios Section -->
                         <section id="usuarios" class="content-section <?php echo $seccionActiva === 'usuarios' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
@@ -297,7 +331,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                 </div>
                             </div>
 
-                            <!-- Users Table con scroll horizontal -->
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -312,30 +345,45 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php if ($usuarios && count($usuarios) > 0): ?>
+                                        <?php if (!empty($usuarios)): ?>
                                             <?php foreach ($usuarios as $usuario): ?>
                                                 <tr>
                                                     <td>
-                                                        <div class="user-info">
-                                                            <div class="user-avatar-small">
-                                                                <?php echo strtoupper(substr($usuario['Nombre'], 0, 2)); ?>
+                                                        <div class="user-info-cell">
+                                                            <div class="user-avatar-sm">
+                                                                <?php 
+                                                                $nombre = htmlspecialchars($usuario['Nombre']);
+                                                                $iniciales = '';
+                                                                $palabras = explode(' ', $nombre);
+                                                                foreach ($palabras as $palabra) {
+                                                                    if (!empty($palabra)) {
+                                                                        $iniciales .= strtoupper(substr($palabra, 0, 1));
+                                                                        if (strlen($iniciales) >= 2) break;
+                                                                    }
+                                                                }
+                                                                echo $iniciales;
+                                                                ?>
                                                             </div>
-                                                            <div>
-                                                                <strong><?php echo htmlspecialchars($usuario['Nombre']); ?></strong>
-                                                                <?php if ($usuario['Tipo_Usuario'] == 1): ?>
-                                                                    <span class="badge bg-warning ms-1">Admin</span>
-                                                                <?php endif; ?>
-                                                            </div>
+                                                            <span><?php echo $nombre; ?></span>
                                                         </div>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
-                                                    <td><?php echo htmlspecialchars($usuario['Pais_Nacimiento'] ?? 'N/A'); ?></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($usuario['Fecha_Registro'])); ?></td>
-                                                    <td><span class="badge bg-secondary">0</span></td>
                                                     <td>
-                                                        <?php if ($usuario['Activo']): ?>
+                                                        <?php 
+                                                        echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : 'N/A'; 
+                                                        ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php 
+                                                        $fecha = new DateTime($usuario['Fecha_Registro']);
+                                                        echo $fecha->format('d/m/Y'); 
+                                                        ?>
+                                                    </td>
+                                                    <td><span class="badge bg-primary">0</span></td>
+                                                    <td>
+                                                        <?php if ($usuario['Activo'] == 1): ?>
                                                             <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox" checked>
+                                                                <input class="form-check-input" type="checkbox" checked disabled>
                                                                 <label class="form-check-label status-active">Activo</label>
                                                             </div>
                                                         <?php else: ?>
@@ -346,23 +394,21 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <!-- Botón Editar -->
-<button type="button" class="btn btn-sm btn-warning" 
-        data-bs-toggle="modal" 
-        data-bs-target="#editarUsuarioModal"
-        data-id="<?php echo $usuario['id_Usuario']; ?>"
-        data-nombre="<?php echo htmlspecialchars($usuario['Nombre']); ?>"
-        data-correo="<?php echo htmlspecialchars($usuario['Correo']); ?>"
-        data-pais="<?php echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : ''; ?>"
-        data-nacionalidad="<?php echo isset($usuario['Nacionalidad']) ? htmlspecialchars($usuario['Nacionalidad']) : ''; ?>"
-        data-genero="<?php echo isset($usuario['Genero']) ? htmlspecialchars($usuario['Genero']) : 'Masculino'; ?>"
-        data-fecha="<?php echo isset($usuario['Fecha_Nacimiento']) ? $usuario['Fecha_Nacimiento'] : ''; ?>"
-        data-tipo="<?php echo $usuario['Tipo_Usuario']; ?>"
-        data-activo="<?php echo $usuario['Activo']; ?>">
-    <i class="fas fa-edit"></i>
-</button>
+                                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#editarUsuarioModal"
+                                                                data-id="<?php echo $usuario['id_Usuario']; ?>"
+                                                                data-nombre="<?php echo htmlspecialchars($usuario['Nombre']); ?>"
+                                                                data-correo="<?php echo htmlspecialchars($usuario['Correo']); ?>"
+                                                                data-pais="<?php echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : ''; ?>"
+                                                                data-nacionalidad="<?php echo isset($usuario['Nacionalidad']) ? htmlspecialchars($usuario['Nacionalidad']) : ''; ?>"
+                                                                data-genero="<?php echo isset($usuario['Genero']) ? htmlspecialchars($usuario['Genero']) : 'Masculino'; ?>"
+                                                                data-fecha="<?php echo isset($usuario['Fecha_Nacimiento']) ? $usuario['Fecha_Nacimiento'] : ''; ?>"
+                                                                data-tipo="<?php echo $usuario['Tipo_Usuario']; ?>"
+                                                                data-activo="<?php echo $usuario['Activo']; ?>">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
                                                         
-                                                        <!-- Botón Eliminar -->
                                                         <?php if ($usuario['id_Usuario'] != $_SESSION['usuario_id']): ?>
                                                             <form method="POST" action="../backend/api/usuarios.php" 
                                                                   style="display: inline;"
@@ -394,7 +440,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </div>
                         </section>
 
-                        <!-- Categorías Section -->
                         <section id="categorias" class="content-section <?php echo $seccionActiva === 'categorias' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
@@ -406,7 +451,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                 </button>
                             </div>
 
-                            <!-- Categories Grid -->
                             <div class="row g-4">
                                 <?php if ($categorias && count($categorias) > 0): ?>
                                     <?php foreach ($categorias as $categoria): ?>
@@ -435,7 +479,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </div>
                         </section>
 
-                        <!-- Comentarios Section -->
                         <section id="comentarios" class="content-section <?php echo $seccionActiva === 'comentarios' ? 'active' : ''; ?>">
                             <div class="section-header">
                                 <h3>
@@ -460,39 +503,145 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         </div>
     </div>
 
-    <!-- Modal Crear Categoría -->
-    <div class="modal fade" id="crearCategoriaModal" tabindex="-1" aria-labelledby="crearCategoriaLabel" aria-hidden="true">
+    <div class="modal fade" id="crearMundialModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form action="../backend/api/mundiales.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="accion" value="crear">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #6101EB, #FF0050); color: white;">
+                        <h5 class="modal-title">
+                            <i class="fas fa-globe me-2"></i>Nuevo Mundial
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nombre_mundial" class="form-label">
+                                    <i class="fas fa-trophy me-1"></i>Nombre del Mundial
+                                </label>
+                                <input type="text" class="form-control" id="nombre_mundial" name="nombre" placeholder="Ej: Copa Mundial de la FIFA" maxlength="100" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="anio_mundial" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Año
+                                </label>
+                                <input type="number" class="form-control" id="anio_mundial" name="anio" placeholder="2026" min="1930" max="2100" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="sede_mundial" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Sede
+                                </label>
+                                <input type="text" class="form-control" id="sede_mundial" name="sede" placeholder="Ej: México, Estados Unidos y Canadá" maxlength="100" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="logo_mundial" class="form-label">
+                                    <i class="fas fa-image me-1"></i>Logo (Opcional)
+                                </label>
+                                <input type="file" class="form-control" id="logo_mundial" name="logo" accept="image/jpeg,image/png,image/gif,image/webp">
+                                <div class="form-text">Formatos: JPG, PNG, GIF, WEBP. Máximo 5MB</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="descripcion_mundial" class="form-label">
+                                    <i class="fas fa-align-left me-1"></i>Descripción (Opcional)
+                                </label>
+                                <textarea class="form-control" id="descripcion_mundial" name="descripcion" rows="3" placeholder="Información adicional sobre el mundial..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Crear Mundial
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editarMundialModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form action="../backend/api/mundiales.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="accion" value="actualizar">
+                    <input type="hidden" name="id_mundial" id="edit_id_mundial">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #6101EB, #FF0050); color: white;">
+                        <h5 class="modal-title">
+                            <i class="fas fa-edit me-2"></i>Editar Mundial
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit_nombre_mundial" class="form-label">
+                                    <i class="fas fa-trophy me-1"></i>Nombre del Mundial
+                                </label>
+                                <input type="text" class="form-control" id="edit_nombre_mundial" name="nombre" maxlength="100" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_anio_mundial" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Año
+                                </label>
+                                <input type="number" class="form-control" id="edit_anio_mundial" name="anio" min="1930" max="2100" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_sede_mundial" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Sede
+                                </label>
+                                <input type="text" class="form-control" id="edit_sede_mundial" name="sede" maxlength="100" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_logo_mundial" class="form-label">
+                                    <i class="fas fa-image me-1"></i>Cambiar Logo (Opcional)
+                                </label>
+                                <input type="file" class="form-control" id="edit_logo_mundial" name="logo" accept="image/jpeg,image/png,image/gif,image/webp">
+                                <div class="form-text">Deja vacío si no deseas cambiar el logo. Formatos: JPG, PNG, GIF, WEBP. Máximo 5MB</div>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_descripcion_mundial" class="form-label">
+                                    <i class="fas fa-align-left me-1"></i>Descripción (Opcional)
+                                </label>
+                                <textarea class="form-control" id="edit_descripcion_mundial" name="descripcion" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="crearCategoriaModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form action="../backend/api/categorias.php" method="POST">
                     <input type="hidden" name="accion" value="crear">
-                    
                     <div class="modal-header" style="background: linear-gradient(135deg, #6101EB, #FF0050); color: white;">
-                        <h5 class="modal-title" id="crearCategoriaLabel">
+                        <h5 class="modal-title">
                             <i class="fas fa-folder-plus me-2"></i>Nueva Categoría
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="nombre_categoria" class="form-label">
                                 <i class="fas fa-tag me-1"></i>Nombre de la Categoría
                             </label>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="nombre_categoria" 
-                                name="nombre" 
-                                placeholder="Ej: Goles Memorables, Jugadores Legendarios..."
-                                minlength="3"
-                                maxlength="100"
-                                required
-                            >
+                            <input type="text" class="form-control" id="nombre_categoria" name="nombre" placeholder="Ej: Goles Memorables, Jugadores Legendarios..." minlength="3" maxlength="100" required>
                             <div class="form-text">Mínimo 3 caracteres, máximo 100</div>
                         </div>
                     </div>
-                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-1"></i>Cancelar
@@ -506,7 +655,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         </div>
     </div>
 
-    <!-- Modal Editar Usuario -->
     <div class="modal fade" id="editarUsuarioModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -516,46 +664,36 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" action="../backend/api/usuarios.php" id="formEditarUsuario">
+                <form method="POST" action="../backend/api/usuarios.php">
                     <div class="modal-body">
                         <input type="hidden" name="accion" value="actualizar">
                         <input type="hidden" name="id_usuario" id="edit_id_usuario">
-                        
                         <div class="row g-3">
-                            <!-- Nombre -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-user me-1"></i>Nombre Completo
                                 </label>
                                 <input type="text" class="form-control" name="nombre" id="edit_nombre" required>
                             </div>
-                            
-                            <!-- Correo -->
-<div class="col-md-6">
-    <label class="form-label">
-        <i class="fas fa-envelope me-1"></i>Correo Electrónico
-        <small class="text-muted">(No editable)</small>
-    </label>
-    <input type="email" class="form-control" name="correo" id="edit_correo" readonly required style="background-color: #f8f9fa; cursor: not-allowed;">
-</div>
-                            
-                            <!-- País de Nacimiento -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>Correo Electrónico
+                                    <small class="text-muted">(No editable)</small>
+                                </label>
+                                <input type="email" class="form-control" name="correo" id="edit_correo" readonly required style="background-color: #f8f9fa; cursor: not-allowed;">
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-flag me-1"></i>País de Nacimiento
                                 </label>
                                 <input type="text" class="form-control" name="pais_nacimiento" id="edit_pais" required>
                             </div>
-                            
-                            <!-- Nacionalidad -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-globe me-1"></i>Nacionalidad
                                 </label>
                                 <input type="text" class="form-control" name="nacionalidad" id="edit_nacionalidad" required>
                             </div>
-                            
-                            <!-- Género -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-venus-mars me-1"></i>Género
@@ -566,16 +704,12 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
-                            
-                            <!-- Fecha de Nacimiento -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-calendar me-1"></i>Fecha de Nacimiento
                                 </label>
                                 <input type="date" class="form-control" name="fecha_nacimiento" id="edit_fecha" required>
                             </div>
-                            
-                            <!-- Tipo de Usuario -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-user-shield me-1"></i>Tipo de Usuario
@@ -585,8 +719,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                     <option value="1">Administrador</option>
                                 </select>
                             </div>
-                            
-                            <!-- Estado -->
                             <div class="col-md-6">
                                 <label class="form-label">
                                     <i class="fas fa-toggle-on me-1"></i>Estado
@@ -611,7 +743,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer pb-2 pt-4" id="main-footer">
         <div class="container-fluid px-4">
             <div class="row">
@@ -633,57 +764,41 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Modal Handler Script -->
     <script>
-    console.log('Script modal iniciado');
-    
-    // Esperar a que el DOM esté completamente cargado
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM Content Loaded');
-        
-        const modalElement = document.getElementById('editarUsuarioModal');
-        console.log('Modal element:', modalElement);
-        
-        if (modalElement) {
-            modalElement.addEventListener('show.bs.modal', function (event) {
-                console.log('Modal show event triggered');
+        const modalUsuario = document.getElementById('editarUsuarioModal');
+        if (modalUsuario) {
+            modalUsuario.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
-                
                 if (button) {
-                    // Obtener datos del botón
-                    const id = button.getAttribute('data-id');
-                    const nombre = button.getAttribute('data-nombre');
-                    const correo = button.getAttribute('data-correo');
-                    const pais = button.getAttribute('data-pais');
-                    const nacionalidad = button.getAttribute('data-nacionalidad');
-                    const genero = button.getAttribute('data-genero');
-                    const fecha = button.getAttribute('data-fecha');
-                    const tipo = button.getAttribute('data-tipo');
-                    const activo = button.getAttribute('data-activo');
-                    
-                    console.log('Datos:', {id, nombre, correo});
-                    
-                    // Llenar el formulario
-                    document.getElementById('edit_id_usuario').value = id || '';
-                    document.getElementById('edit_nombre').value = nombre || '';
-                    document.getElementById('edit_correo').value = correo || '';
-                    document.getElementById('edit_pais').value = pais || '';
-                    document.getElementById('edit_nacionalidad').value = nacionalidad || '';
-                    document.getElementById('edit_genero').value = genero || 'Masculino';
-                    document.getElementById('edit_fecha').value = fecha || '';
-                    document.getElementById('edit_tipo').value = tipo || '0';
-                    document.getElementById('edit_activo').value = activo || '1';
-                    
-                    console.log('Formulario llenado');
+                    document.getElementById('edit_id_usuario').value = button.getAttribute('data-id') || '';
+                    document.getElementById('edit_nombre').value = button.getAttribute('data-nombre') || '';
+                    document.getElementById('edit_correo').value = button.getAttribute('data-correo') || '';
+                    document.getElementById('edit_pais').value = button.getAttribute('data-pais') || '';
+                    document.getElementById('edit_nacionalidad').value = button.getAttribute('data-nacionalidad') || '';
+                    document.getElementById('edit_genero').value = button.getAttribute('data-genero') || 'Masculino';
+                    document.getElementById('edit_fecha').value = button.getAttribute('data-fecha') || '';
+                    document.getElementById('edit_tipo').value = button.getAttribute('data-tipo') || '0';
+                    document.getElementById('edit_activo').value = button.getAttribute('data-activo') || '1';
                 }
             });
-            console.log('Event listener agregado');
         }
         
-        // Auto-cerrar alertas después de 5 segundos
+        const modalMundial = document.getElementById('editarMundialModal');
+        if (modalMundial) {
+            modalMundial.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (button) {
+                    document.getElementById('edit_id_mundial').value = button.getAttribute('data-id') || '';
+                    document.getElementById('edit_nombre_mundial').value = button.getAttribute('data-nombre') || '';
+                    document.getElementById('edit_anio_mundial').value = button.getAttribute('data-anio') || '';
+                    document.getElementById('edit_sede_mundial').value = button.getAttribute('data-sede') || '';
+                    document.getElementById('edit_descripcion_mundial').value = button.getAttribute('data-descripcion') || '';
+                }
+            });
+        }
+        
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-dismissible');
             alerts.forEach(alert => {
@@ -695,8 +810,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         }, 5000);
     });
     </script>
-    
-    <!-- Dashboard Admin JS -->
     <script src="assets/js/dashboard-admin.js"></script>
 </body>
 </html>
