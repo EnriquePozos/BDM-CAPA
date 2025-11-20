@@ -35,6 +35,42 @@ $mundialController = new MundialController();
 // Obtener lista de mundiales
 $mundiales = $mundialController->listar();
 
+
+// ========== NUEVO: Cargar controladores de Publicaciones y Comentarios ==========
+require_once __DIR__ . '/../backend/controllers/PublicacionController.php';
+require_once __DIR__ . '/../backend/controllers/ComentarioController.php';
+require_once __DIR__ . '/../backend/models/Publicacion.php';
+require_once __DIR__ . '/../backend/models/Comentario.php';
+require_once __DIR__ . '/../backend/models/Multimedia.php';
+
+$publicacionController = new PublicacionController();
+$comentarioController = new ComentarioController();
+$publicacionModel = new Publicacion();
+$comentarioModel = new Comentario();
+
+// Obtener publicaciones pendientes
+$publicacionesPendientes = $publicacionController->listarPendientes();
+if (!$publicacionesPendientes) $publicacionesPendientes = [];
+
+// Obtener TODOS los comentarios del sistema
+$todosComentarios = [];
+if ($mundiales && is_array($mundiales)) {
+    foreach ($mundiales as $mundial) {
+        $todasPublicaciones = $publicacionModel->listarPorMundial($mundial['id_Mundial'], false);
+        if ($todasPublicaciones && is_array($todasPublicaciones)) {
+            foreach ($todasPublicaciones as $pub) {
+                $comentarios = $comentarioModel->listarPorPublicacion($pub['id_Publicacion']);
+                if ($comentarios && is_array($comentarios)) {
+                    foreach ($comentarios as $com) {
+                        $com['Publicacion_Titulo'] = $pub['Titulo'];
+                        $todosComentarios[] = $com;
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Determinar qué sección mostrar
 $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
 ?>
@@ -56,6 +92,107 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         }
         .table-responsive table {
             min-width: 900px;
+        }
+        /* ========== ESTILOS PARA PUBLICACIONES ========== */
+        .publication-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .publication-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(97, 1, 235, 0.15);
+        }
+        
+        .publication-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .publication-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .publication-badge.pending {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        
+        .publication-multimedia {
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .publication-multimedia img,
+        .publication-multimedia video {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        
+        .publication-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        /* ========== ESTILOS PARA COMENTARIOS ========== */
+        .comment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #6101EB;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-card:hover {
+            box-shadow: 0 4px 12px rgba(97, 1, 235, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comment-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6101EB, #FF0050);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .comment-publication-ref {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -147,6 +284,9 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             <a href="?seccion=publicaciones" class="menu-item <?php echo $seccionActiva === 'publicaciones' ? 'active' : ''; ?>">
                                 <i class="fas fa-images"></i>
                                 <span>Gestionar Publicaciones</span>
+                                <?php if ($publicacionesPendientes && count($publicacionesPendientes) > 0): ?>
+                                    <span class="badge bg-warning text-dark ms-auto"><?php echo count($publicacionesPendientes); ?></span>
+                                <?php endif; ?>
                             </a>
                             <a href="?seccion=mundiales" class="menu-item <?php echo $seccionActiva === 'mundiales' ? 'active' : ''; ?>">
                                 <i class="fas fa-globe-americas"></i>
@@ -163,6 +303,9 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             <a href="?seccion=comentarios" class="menu-item <?php echo $seccionActiva === 'comentarios' ? 'active' : ''; ?>">
                                 <i class="fas fa-comments"></i>
                                 <span>Moderar Comentarios</span>
+                                <?php if (count($todosComentarios) > 0): ?>
+                                    <span class="badge bg-info ms-auto"><?php echo count($todosComentarios); ?></span>
+                                <?php endif; ?>
                             </a>
                         </nav>
                     </div>
@@ -189,7 +332,7 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                 </div>
                                 <div class="welcome-content">
                                     <h4>¡Bienvenido de nuevo!</h4>
-                                    <p>Tienes <strong>0 publicaciones pendientes</strong> de aprobación y <strong><?php echo count($usuarios); ?> usuarios</strong> registrados.</p>
+                                    <p>Tienes <strong><?php echo count($publicacionesPendientes); ?> publicaciones pendientes</strong> de aprobación y <strong><?php echo count($usuarios); ?> usuarios</strong> registrados.</p>
                                 </div>
                             </div>
 
@@ -199,6 +342,9 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                             </h4>
                             <div class="action-cards">
                                 <a href="?seccion=publicaciones" class="action-card">
+                                    <?php if (count($publicacionesPendientes) > 0): ?>
+                                        <span class="action-badge"><?php echo count($publicacionesPendientes); ?></span>
+                                    <?php endif; ?>
                                     <span class="action-badge">0</span>
                                     <div class="action-icon">
                                         <i class="fas fa-clipboard-check"></i>
@@ -240,19 +386,116 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                     Gestionar Publicaciones
                                 </h3>
                                 <div class="header-actions">
-                                    <select class="form-select form-select-sm">
-                                        <option>Todas las publicaciones</option>
-                                        <option>Pendientes</option>
-                                        <option>Aprobadas</option>
-                                        <option>Rechazadas</option>
-                                    </select>
+                                    <span class="badge bg-warning text-dark">
+                                        <?php echo count($publicacionesPendientes); ?> pendientes
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                No hay publicaciones aún. Los usuarios pueden crear publicaciones desde la página principal.
-                            </div>
+                            <?php if ($publicacionesPendientes && count($publicacionesPendientes) > 0): ?>
+                                <?php foreach ($publicacionesPendientes as $publicacion): ?>
+                                    <div class="publication-card">
+                                        <div class="publication-header">
+                                            <div>
+                                                <h4 style="margin: 0; color: #6101EB;">
+                                                    <?php echo htmlspecialchars($publicacion['Titulo']); ?>
+                                                </h4>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user me-1"></i>
+                                                    <?php echo htmlspecialchars($publicacion['Usuario_Nombre']); ?>
+                                                    •
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <?php 
+                                                    $fecha = new DateTime($publicacion['Fecha_Creacion']);
+                                                    echo $fecha->format('d/m/Y H:i'); 
+                                                    ?>
+                                                </small>
+                                            </div>
+                                            <span class="publication-badge pending">
+                                                <i class="fas fa-hourglass-half me-1"></i>Pendiente
+                                            </span>
+                                        </div>
+
+                                        <div class="publication-content">
+                                            <p style="margin: 10px 0;">
+                                                <?php echo nl2br(htmlspecialchars($publicacion['Descripcion'])); ?>
+                                            </p>
+
+                                            <?php if (!empty($publicacion['Seleccion'])): ?>
+                                                <p class="mb-2">
+                                                    <i class="fas fa-flag me-1"></i>
+                                                    <strong>Selección:</strong> <?php echo htmlspecialchars($publicacion['Seleccion']); ?>
+                                                </p>
+                                            <?php endif; ?>
+
+                                            <p class="mb-2">
+                                                <i class="fas fa-globe me-1"></i>
+                                                <strong>Mundial:</strong> <?php echo htmlspecialchars($publicacion['Mundial_Nombre']); ?> <?php echo $publicacion['Mundial_Anio']; ?>
+                                            </p>
+
+                                            <?php if (!empty($publicacion['Categorias'])): ?>
+                                                <p class="mb-2">
+                                                    <i class="fas fa-tags me-1"></i>
+                                                    <strong>Categorías:</strong> <?php echo htmlspecialchars($publicacion['Categorias']); ?>
+                                                </p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <!-- Multimedia -->
+                                        <?php
+                                        $multimediaModel = new Multimedia();
+                                        $archivos = $multimediaModel->obtenerPorPublicacion($publicacion['id_Publicacion']);
+                                        
+                                        if ($archivos && count($archivos) > 0):
+                                        ?>
+                                            <div class="publication-multimedia">
+                                                <div class="row g-2">
+                                                    <?php foreach ($archivos as $archivo): 
+                                                        $extension = strtolower(pathinfo($archivo['Nombre_Archivo'], PATHINFO_EXTENSION));
+                                                        $esVideo = in_array($extension, ['mp4', 'avi', 'mov']);
+                                                    ?>
+                                                        <div class="col-md-6">
+                                                            <?php if ($esVideo): ?>
+                                                                <video controls style="width: 100%; border-radius: 10px;">
+                                                                    <source src="../backend/api/multimedia.php?accion=servir&id=<?php echo $archivo['id_Multimedia']; ?>" type="video/<?php echo $extension; ?>">
+                                                                </video>
+                                                            <?php else: ?>
+                                                                <img src="../backend/api/multimedia.php?accion=servir&id=<?php echo $archivo['id_Multimedia']; ?>" 
+                                                                     alt="Multimedia" 
+                                                                     style="width: 100%; border-radius: 10px;">
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <!-- Acciones -->
+                                        <div class="publication-actions">
+                                            <form action="../backend/api/publicaciones.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="accion" value="actualizar_estatus">
+                                                <input type="hidden" name="id_publicacion" value="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                <button type="submit" name="estatus" value="Aprobada" class="btn btn-success">
+                                                    <i class="fas fa-check me-1"></i>Aprobar
+                                                </button>
+                                            </form>
+                                            <form action="../backend/api/publicaciones.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="accion" value="actualizar_estatus">
+                                                <input type="hidden" name="id_publicacion" value="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                <button type="submit" name="estatus" value="Rechazada" class="btn btn-danger" 
+                                                        onclick="return confirm('¿Estás seguro de rechazar esta publicación?');">
+                                                    <i class="fas fa-times me-1"></i>Rechazar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No hay publicaciones pendientes de aprobación.
+                                </div>
+                            <?php endif; ?>
                         </section>
 
                         <section id="mundiales" class="content-section <?php echo $seccionActiva === 'mundiales' ? 'active' : ''; ?>">
@@ -485,17 +728,71 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                     <i class="fas fa-comments"></i>
                                     Moderar Comentarios
                                 </h3>
-                                <select class="form-select form-select-sm">
-                                    <option>Todos los comentarios</option>
-                                    <option>Recientes</option>
-                                    <option>Reportados</option>
-                                </select>
+                                <div class="header-actions">
+                                    <span class="badge bg-info">
+                                        <?php echo count($todosComentarios); ?> total
+                                    </span>
+                                </div>
                             </div>
 
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                No hay comentarios para moderar aún.
-                            </div>
+                            <?php if (count($todosComentarios) > 0): ?>
+                                <?php foreach ($todosComentarios as $comentario): ?>
+                                    <div class="comment-card">
+                                        <div class="comment-publication-ref">
+                                            <i class="fas fa-image me-1"></i>
+                                            Publicación: <strong><?php echo htmlspecialchars($comentario['Publicacion_Titulo']); ?></strong>
+                                        </div>
+
+                                        <div class="comment-header">
+                                            <div class="comment-user-info">
+                                                <div class="comment-avatar">
+                                                    <?php 
+                                                    $nombre = $comentario['Usuario_Nombre'];
+                                                    $iniciales = '';
+                                                    $palabras = explode(' ', $nombre);
+                                                    foreach ($palabras as $palabra) {
+                                                        if (!empty($palabra)) {
+                                                            $iniciales .= strtoupper(substr($palabra, 0, 1));
+                                                            if (strlen($iniciales) >= 2) break;
+                                                        }
+                                                    }
+                                                    echo $iniciales;
+                                                    ?>
+                                                </div>
+                                                <div>
+                                                    <strong><?php echo htmlspecialchars($comentario['Usuario_Nombre']); ?></strong>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>
+                                                        <?php 
+                                                        $fecha = new DateTime($comentario['Fecha_Creacion']);
+                                                        echo $fecha->format('d/m/Y H:i'); 
+                                                        ?>
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <form action="../backend/api/comentarios.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="accion" value="eliminar">
+                                                <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_Comentario']; ?>">
+                                                <button type="submit" class="btn btn-danger btn-sm" 
+                                                        onclick="return confirm('¿Estás seguro de eliminar este comentario?');">
+                                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="comment-content" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                                            <?php echo nl2br(htmlspecialchars($comentario['Contenido'])); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No hay comentarios para moderar aún.
+                                </div>
+                            <?php endif; ?>
                         </section>
                     </div>
                 </div>

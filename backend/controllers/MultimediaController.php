@@ -9,7 +9,7 @@ class MultimediaController {
     
     private $multimediaModel;
     private $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'avi', 'mov'];
-    private $tamanoMaximo = 10485760; // 10MB en bytes
+    private $tamanoMaximo = 104857600; // 100MB en bytes
 
     public function __construct() {
         // Iniciar sesión si no está iniciada

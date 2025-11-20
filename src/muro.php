@@ -3,11 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qatar 2022 - Muro de Publicaciones</title>
+    <title>Muro de Publicaciones - FIFA Mundiales</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/base.css" rel="stylesheet">
     <link href="assets/css/muro.css" rel="stylesheet">
+    
+    <!-- CSS para solucionar problema de z-index -->
+    <style>
+        .btn-create-post {
+            position: relative !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+        
+        /* Asegurar que el fondo no bloquee */
+        .mundial-header-bg {
+            pointer-events: none !important;
+        }
+        
+        /* Asegurar que el header permita clicks en sus hijos */
+        .mundial-header {
+            position: relative;
+        }
+        
+        .mundial-header * {
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body>
 <?php
@@ -18,7 +42,51 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verificar si hay sesión activa
 $sesionActiva = isset($_SESSION['usuario_id']);
+
+// ========== VALIDAR QUE VENGA ID DE MUNDIAL ==========
+if (!isset($_GET['id_mundial']) || empty($_GET['id_mundial'])) {
+    header('Location: mundiales.php?error=Debes seleccionar un mundial');
+    exit();
+}
+
+$idMundial = intval($_GET['id_mundial']);
+
+// ========== CARGAR DATOS DESDE BASE DE DATOS ==========
+require_once __DIR__ . '/../backend/controllers/PublicacionController.php';
+require_once __DIR__ . '/../backend/controllers/ComentarioController.php';
+require_once __DIR__ . '/../backend/controllers/ReaccionController.php';
+require_once __DIR__ . '/../backend/controllers/CategoriaControler.php';
+require_once __DIR__ . '/../backend/models/Mundial.php';
+
+// Instanciar controladores
+$publicacionController = new PublicacionController();
+$comentarioController = new ComentarioController();
+$reaccionController = new ReaccionController();
+$categoriaController = new CategoriaController();
+
+// Cargar información del mundial
+$mundialModel = new Mundial();
+$mundial = $mundialModel->obtenerPorId($idMundial);
+
+// Si el mundial no existe, redirigir
+if (!$mundial) {
+    header('Location: mundiales.php?error=Mundial no encontrado');
+    exit();
+}
+
+// Cargar publicaciones con multimedia (solo aprobadas para usuarios normales)
+$publicaciones = $publicacionController->obtenerPublicacionesConMultimedia($idMundial, true);
+
+// Cargar categorías para el formulario
+$categorias = $categoriaController->listar();
+
+// Convertir logo del mundial a Base64
+$logoMundialBase64 = '';
+if (!empty($mundial['Logo'])) {
+    $logoMundialBase64 = base64_encode($mundial['Logo']);
+}
 ?>
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid px-4">
@@ -33,7 +101,7 @@ $sesionActiva = isset($_SESSION['usuario_id']);
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link active" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                    <a class="nav-link" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
@@ -96,22 +164,31 @@ $sesionActiva = isset($_SESSION['usuario_id']);
                             <a href="mundiales.php"><i class="fas fa-arrow-left me-2"></i>Volver a Mundiales</a>
                         </div>
                         <h1 class="mundial-header-title">
-                            <i class="fas fa-trophy me-3"></i>QATAR 2022
+                            <i class="fas fa-trophy me-3"></i><?php echo strtoupper(htmlspecialchars($mundial['Nombre'])); ?>
                         </h1>
                         <p class="mundial-header-desc">
-                            <i class="fas fa-map-marker-alt me-2"></i>Qatar · 21 Nov - 18 Dic 2022
+                            <i class="fas fa-map-marker-alt me-2"></i><?php echo htmlspecialchars($mundial['Sede']); ?> · <?php echo $mundial['Anio']; ?>
                         </p>
+                        <?php if (!empty($mundial['Descripcion'])): ?>
+                            <p class="mundial-header-desc">
+                                <?php echo htmlspecialchars($mundial['Descripcion']); ?>
+                            </p>
+                        <?php endif; ?>
                         <div class="mundial-header-stats">
-                            <span><i class="fas fa-images me-2"></i>245 Publicaciones</span>
-                            <span><i class="fas fa-heart me-2"></i>12.5K Likes</span>
-                            <span><i class="fas fa-comment me-2"></i>3.8K Comentarios</span>
+                            <span><i class="fas fa-images me-2"></i><?php echo count($publicaciones); ?> Publicaciones</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 text-center">
-                    <button class="btn-create-post" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                        <i class="fas fa-plus-circle me-2"></i>Crear Publicación
-                    </button>
+                    <?php if ($sesionActiva): ?>
+                        <button class="btn-create-post" type="button">
+                            <i class="fas fa-plus-circle me-2"></i>Crear Publicación
+                        </button>
+                    <?php else: ?>
+                        <a href="login.php" class="btn-create-post">
+                            <i class="fas fa-sign-in-alt me-2"></i>Inicia sesión para publicar
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -126,18 +203,11 @@ $sesionActiva = isset($_SESSION['usuario_id']);
                     <button class="category-pill active" data-category="all">
                         <i class="fas fa-globe"></i> Todas
                     </button>
-                    <button class="category-pill" data-category="jugadas">
-                        <i class="fas fa-futbol"></i> Jugadas
-                    </button>
-                    <button class="category-pill" data-category="partidos">
-                        <i class="fas fa-trophy"></i> Partidos
-                    </button>
-                    <button class="category-pill" data-category="estadisticas">
-                        <i class="fas fa-chart-bar"></i> Estadísticas
-                    </button>
-                    <button class="category-pill" data-category="cultura">
-                        <i class="fas fa-heart"></i> Cultura
-                    </button>
+                    <?php foreach ($categorias as $categoria): ?>
+                        <button class="category-pill" data-category="<?php echo htmlspecialchars($categoria['Nombre']); ?>">
+                            <i class="fas fa-tag"></i> <?php echo htmlspecialchars($categoria['Nombre']); ?>
+                        </button>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Ordenar -->
@@ -146,259 +216,216 @@ $sesionActiva = isset($_SESSION['usuario_id']);
                         <option value="reciente">🆕 Más reciente</option>
                         <option value="likes">❤️ Más likes</option>
                         <option value="comentarios">💬 Más comentarios</option>
-                        <option value="vistas">👁️ Más vistas</option>
                     </select>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- MURO DE PUBLICACIONES -->
+    <!-- SECCIÓN DEL MURO -->
     <section class="muro-section">
         <div class="container">
             <div class="row">
-                <!-- COLUMNA PRINCIPAL - FEED -->
+                <!-- Feed de Publicaciones -->
                 <div class="col-lg-8">
                     <div class="posts-feed">
-                        
-                        <!-- PUBLICACIÓN 1 -->
-                        <article class="post-muro">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=6101eb&color=fff" class="author-avatar" alt="Juan Pérez">
-                                    <div class="author-info">
-                                        <h6 class="author-name">Juan Pérez</h6>
-                                        <span class="post-time"><i class="far fa-clock me-1"></i>Hace 2 horas</span>
-                                    </div>
-                                </div>
-                                <div class="post-category-badge">Jugadas</div>
+                        <?php if (empty($publicaciones)): ?>
+                            <!-- Sin publicaciones -->
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Aún no hay publicaciones aprobadas para este mundial. 
+                                <?php if ($sesionActiva): ?>
+                                    ¡Sé el primero en crear una!
+                                <?php endif; ?>
                             </div>
-
-                            <div class="post-body">
-                                <h5 class="post-title-muro">El mejor gol de Messi en la final</h5>
-                                <p class="post-description-muro">
-                                    Increíble definición de Messi en el minuto 108. Argentina campeón del mundo después de 36 años. Un momento histórico que quedará para siempre.
-                                </p>
+                        <?php else: ?>
+                            <?php foreach ($publicaciones as $publicacion): ?>
+                                <?php
+                                // Cargar comentarios de la publicación
+                                $comentarios = $comentarioController->listarPorPublicacion($publicacion['id_Publicacion']);
                                 
-                                <!-- Imagen de la publicación -->
-                                <div class="post-media-muro">
-                                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200" alt="Publicación">
-                                </div>
-
-                                <!-- Match info -->
-                                <div class="post-match-info">
-                                    <span class="match-teams">🇦🇷 Argentina vs Francia 🇫🇷</span>
-                                    <span class="match-stage">Final</span>
-                                </div>
-                            </div>
-
-                            <div class="post-actions">
-                                <button class="action-btn-muro active-like">
-                                    <i class="fas fa-heart"></i>
-                                    <span>1.2K</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-comment"></i>
-                                    <span>234</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-share-square"></i>
-                                    <span>Compartir</span>
-                                </button>
-                            </div>
-
-                            <!-- Sección de comentarios -->
-                            <div class="post-comments-section">
-                                <div class="comments-list">
-                                    <div class="comment-item">
-                                        <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=3fe8c6&color=6101eb" class="comment-avatar" alt="Usuario">
-                                        <div class="comment-content">
-                                            <h6 class="comment-author">María García</h6>
-                                            <p class="comment-text">¡Qué golazo! Messi es el mejor de todos los tiempos 🐐</p>
-                                            <span class="comment-time">Hace 1 hora</span>
+                                // Contar likes
+                                $totalLikes = $reaccionController->contar($publicacion['id_Publicacion']);
+                                
+                                // Verificar si el usuario actual dio like
+                                $tieneLike = false;
+                                if ($sesionActiva) {
+                                    $tieneLike = $reaccionController->verificar($_SESSION['usuario_id'], $publicacion['id_Publicacion']);
+                                }
+                                ?>
+                                
+                                <!-- POST -->
+                                <div class="post-muro">
+                                    <!-- Header del post -->
+                                    <div class="post-header">
+                                        <div class="post-author">
+                                            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($publicacion['Usuario_Nombre']); ?>&background=6101eb&color=fff" 
+                                                 class="author-avatar" 
+                                                 alt="<?php echo htmlspecialchars($publicacion['Usuario_Nombre']); ?>">
+                                            <div class="author-info">
+                                                <h5 class="author-name"><?php echo htmlspecialchars($publicacion['Usuario_Nombre']); ?></h5>
+                                                <span class="post-time">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <?php 
+                                                    $fecha = new DateTime($publicacion['Fecha_Creacion']);
+                                                    echo $fecha->format('d/m/Y H:i'); 
+                                                    ?>
+                                                </span>
+                                            </div>
                                         </div>
+                                        <span class="post-category-badge">
+                                            <?php echo isset($publicacion['Categorias']) ? htmlspecialchars($publicacion['Categorias']) : 'General'; ?>
+                                        </span>
                                     </div>
-                                    <div class="comment-item">
-                                        <img src="https://ui-avatars.com/api/?name=Carlos+Lopez&background=6101eb&color=fff" class="comment-avatar" alt="Usuario">
-                                        <div class="comment-content">
-                                            <h6 class="comment-author">Carlos López</h6>
-                                            <p class="comment-text">Argentina campeón del mundo! 🏆🇦🇷</p>
-                                            <span class="comment-time">Hace 30 min</span>
-                                        </div>
+
+                                    <!-- Body del post -->
+                                    <div class="post-body">
+                                        <h3 class="post-title-muro"><?php echo htmlspecialchars($publicacion['Titulo']); ?></h3>
+                                        <p class="post-description-muro"><?php echo nl2br(htmlspecialchars($publicacion['Descripcion'])); ?></p>
+
+                                        <!-- Multimedia -->
+                                        <?php if (!empty($publicacion['multimedia'])): ?>
+                                            <?php foreach ($publicacion['multimedia'] as $media): ?>
+                                                <?php
+                                                // Determinar tipo de archivo
+                                                $extension = strtolower(pathinfo($media['Nombre_Archivo'], PATHINFO_EXTENSION));
+                                                $esVideo = in_array($extension, ['mp4', 'avi', 'mov', 'webm']);
+                                                ?>
+                                                <div class="post-media-muro">
+                                                    <?php if ($esVideo): ?>
+                                                        <!-- Videos: Usar URL directa para mejor rendimiento -->
+                                                        <video controls style="width: 100%; border-radius: 15px;">
+                                                            <source src="../backend/api/multimedia.php?accion=servir&id=<?php echo $media['id_Multimedia']; ?>" 
+                                                                    type="video/<?php echo $extension; ?>">
+                                                            Tu navegador no soporta la reproducción de videos.
+                                                        </video>
+                                                    <?php else: ?>
+                                                        <!-- Imágenes: Usar Base64 (archivos pequeños) -->
+                                                        <?php
+                                                        $mediaBase64 = base64_encode($media['File']);
+                                                        ?>
+                                                        <img src="data:image/jpeg;base64,<?php echo $mediaBase64; ?>" 
+                                                             alt="<?php echo htmlspecialchars($publicacion['Titulo']); ?>">
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+
+                                        <!-- Info del partido (si hay selección) -->
+                                        <?php if (!empty($publicacion['Seleccion'])): ?>
+                                            <div class="post-match-info">
+                                                <span class="match-teams">
+                                                    <i class="fas fa-flag me-2"></i><?php echo htmlspecialchars($publicacion['Seleccion']); ?>
+                                                </span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <!-- Acciones del post -->
+                                    <div class="post-actions">
+                                        <?php if ($sesionActiva): ?>
+                                            <!-- Toggle Like -->
+                                            <form action="../backend/api/reacciones.php" method="POST" style="flex: 1;">
+                                                <input type="hidden" name="accion" value="toggle">
+                                                <input type="hidden" name="id_publicacion" value="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                <button type="submit" class="action-btn-muro <?php echo $tieneLike ? 'active-like' : ''; ?>">
+                                                    <i class="<?php echo $tieneLike ? 'fas' : 'far'; ?> fa-heart"></i>
+                                                    <?php echo $totalLikes; ?> Likes
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <a href="login.php" class="action-btn-muro">
+                                                <i class="far fa-heart"></i> <?php echo $totalLikes; ?> Likes
+                                            </a>
+                                        <?php endif; ?>
+
+                                        <button class="action-btn-muro" onclick="toggleComments('comments-<?php echo $publicacion['id_Publicacion']; ?>')">
+                                            <i class="fas fa-comment"></i> 
+                                            <?php echo is_array($comentarios) ? count($comentarios) : 0; ?> Comentarios
+                                        </button>
+                                    </div>
+
+                                    <!-- Sección de comentarios -->
+                                    <div class="post-comments-section" id="comments-<?php echo $publicacion['id_Publicacion']; ?>" style="display: none;">
+                                        <!-- Lista de comentarios -->
+                                        <?php if (!empty($comentarios) && is_array($comentarios)): ?>
+                                            <div class="comments-list">
+                                                <?php foreach ($comentarios as $comentario): ?>
+                                                    <div class="comment-item">
+                                                        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($comentario['Usuario_Nombre']); ?>&background=3fe8c6&color=6101eb" 
+                                                             class="comment-avatar" 
+                                                             alt="<?php echo htmlspecialchars($comentario['Usuario_Nombre']); ?>">
+                                                        <div class="comment-content">
+                                                            <h6 class="comment-author"><?php echo htmlspecialchars($comentario['Usuario_Nombre']); ?></h6>
+                                                            <p class="comment-text"><?php echo nl2br(htmlspecialchars($comentario['Contenido'])); ?></p>
+                                                            <span class="comment-time">
+                                                                <?php 
+                                                                $fechaComentario = new DateTime($comentario['Fecha_Creacion']);
+                                                                echo $fechaComentario->format('d/m/Y H:i'); 
+                                                                ?>
+                                                                
+                                                                <!-- Botón eliminar (solo si es del usuario o es admin) -->
+                                                                <?php if ($sesionActiva && ($comentario['id_Usuario'] == $_SESSION['usuario_id'] || $_SESSION['usuario_tipo'] == 1)): ?>
+                                                                    <form action="../backend/api/comentarios.php" method="POST" style="display: inline; margin-left: 10px;">
+                                                                        <input type="hidden" name="accion" value="eliminar">
+                                                                        <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_Comentario']; ?>">
+                                                                        <input type="hidden" name="id_publicacion" value="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" 
+                                                                                onclick="return confirm('¿Eliminar este comentario?')">
+                                                                            <i class="fas fa-trash-alt"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                <?php endif; ?>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <!-- Formulario para nuevo comentario -->
+                                        <?php if ($sesionActiva): ?>
+                                            <form action="../backend/api/comentarios.php" method="POST" class="comment-form">
+                                                <input type="hidden" name="accion" value="crear">
+                                                <input type="hidden" name="id_publicacion" value="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                <input type="text" 
+                                                       name="contenido" 
+                                                       class="comment-input" 
+                                                       placeholder="Escribe un comentario..." 
+                                                       required>
+                                                <button type="submit" class="btn-send-comment">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <div class="alert alert-sm alert-info">
+                                                <a href="login.php">Inicia sesión</a> para comentar
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-
-                                <!-- Formulario nuevo comentario -->
-                                <div class="comment-form">
-                                    <img src="https://ui-avatars.com/api/?name=Tu+Usuario&background=6101eb&color=fff" class="comment-avatar" alt="Tu avatar">
-                                    <input type="text" class="comment-input" placeholder="Escribe un comentario...">
-                                    <button class="btn-send-comment">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- PUBLICACIÓN 2 -->
-                        <article class="post-muro">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <img src="https://ui-avatars.com/api/?name=Ana+Martinez&background=3fe8c6&color=6101eb" class="author-avatar" alt="Ana Martínez">
-                                    <div class="author-info">
-                                        <h6 class="author-name">Ana Martínez</h6>
-                                        <span class="post-time"><i class="far fa-clock me-1"></i>Hace 5 horas</span>
-                                    </div>
-                                </div>
-                                <div class="post-category-badge">Estadísticas</div>
-                            </div>
-
-                            <div class="post-body">
-                                <h5 class="post-title-muro">Estadísticas de la final histórica</h5>
-                                <p class="post-description-muro">
-                                    La final más emocionante de la historia de los mundiales. 120 minutos de puro fútbol y definición por penales. Aquí las estadísticas completas del partido.
-                                </p>
-                                
-                                <div class="post-media-muro">
-                                    <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200" alt="Estadísticas">
-                                </div>
-
-                                <div class="post-match-info">
-                                    <span class="match-teams">🇦🇷 Argentina 3(4) - 3(2) Francia 🇫🇷</span>
-                                    <span class="match-stage">Final · Penales</span>
-                                </div>
-                            </div>
-
-                            <div class="post-actions">
-                                <button class="action-btn-muro">
-                                    <i class="far fa-heart"></i>
-                                    <span>856</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-comment"></i>
-                                    <span>142</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-share-square"></i>
-                                    <span>Compartir</span>
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- PUBLICACIÓN 3 -->
-                        <article class="post-muro">
-                            <div class="post-header">
-                                <div class="post-author">
-                                    <img src="https://ui-avatars.com/api/?name=Roberto+Silva&background=6101eb&color=fff" class="author-avatar" alt="Roberto Silva">
-                                    <div class="author-info">
-                                        <h6 class="author-name">Roberto Silva</h6>
-                                        <span class="post-time"><i class="far fa-clock me-1"></i>Hace 1 día</span>
-                                    </div>
-                                </div>
-                                <div class="post-category-badge">Cultura</div>
-                            </div>
-
-                            <div class="post-body">
-                                <h5 class="post-title-muro">La pasión de la hinchada argentina</h5>
-                                <p class="post-description-muro">
-                                    Miles de argentinos viajaron a Qatar para apoyar a su selección. La pasión y el color en las tribunas fue increíble durante todo el torneo.
-                                </p>
-                                
-                                <div class="post-media-muro">
-                                    <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200" alt="Hinchada">
-                                </div>
-                            </div>
-
-                            <div class="post-actions">
-                                <button class="action-btn-muro">
-                                    <i class="far fa-heart"></i>
-                                    <span>634</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-comment"></i>
-                                    <span>89</span>
-                                </button>
-                                <button class="action-btn-muro">
-                                    <i class="far fa-share-square"></i>
-                                    <span>Compartir</span>
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- Botón cargar más -->
-                        <div class="text-center mt-4">
-                            <button class="btn-load-more-muro">
-                                <i class="fas fa-plus-circle me-2"></i>Cargar más publicaciones
-                            </button>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- SIDEBAR DERECHO -->
+                <!-- Sidebar -->
                 <div class="col-lg-4">
                     <div class="sidebar-muro">
-                        <!-- Info del Mundial -->
+                        <!-- Info del mundial -->
                         <div class="sidebar-card">
                             <h5 class="sidebar-title">
                                 <i class="fas fa-info-circle me-2"></i>Sobre este Mundial
                             </h5>
                             <div class="mundial-side-info">
-                                <p><strong>Sede:</strong> Qatar</p>
-                                <p><strong>Fechas:</strong> 21 Nov - 18 Dic 2022</p>
-                                <p><strong>Campeón:</strong> 🇦🇷 Argentina</p>
-                                <p><strong>Subcampeón:</strong> 🇫🇷 Francia</p>
-                                <p><strong>Partidos:</strong> 64</p>
-                                <p><strong>Goles:</strong> 172</p>
-                            </div>
-                        </div>
-
-                        <!-- Top Publicaciones -->
-                        <div class="sidebar-card">
-                            <h5 class="sidebar-title">
-                                <i class="fas fa-fire me-2"></i>Más Populares
-                            </h5>
-                            <div class="trending-posts">
-                                <div class="trending-item">
-                                    <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=100" class="trending-thumb" alt="Trending">
-                                    <div class="trending-info">
-                                        <h6>Gol de Messi</h6>
-                                        <span><i class="fas fa-heart me-1"></i>1.2K</span>
-                                    </div>
-                                </div>
-                                <div class="trending-item">
-                                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=100" class="trending-thumb" alt="Trending">
-                                    <div class="trending-info">
-                                        <h6>Final épica</h6>
-                                        <span><i class="fas fa-heart me-1"></i>856</span>
-                                    </div>
-                                </div>
-                                <div class="trending-item">
-                                    <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=100" class="trending-thumb" alt="Trending">
-                                    <div class="trending-info">
-                                        <h6>Celebración</h6>
-                                        <span><i class="fas fa-heart me-1"></i>634</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Usuarios activos -->
-                        <div class="sidebar-card">
-                            <h5 class="sidebar-title">
-                                <i class="fas fa-users me-2"></i>Usuarios Activos
-                            </h5>
-                            <div class="active-users">
-                                <div class="active-user-item">
-                                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=6101eb&color=fff" class="user-avatar-small" alt="Usuario">
-                                    <span>Juan Pérez</span>
-                                </div>
-                                <div class="active-user-item">
-                                    <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=3fe8c6&color=6101eb" class="user-avatar-small" alt="Usuario">
-                                    <span>María García</span>
-                                </div>
-                                <div class="active-user-item">
-                                    <img src="https://ui-avatars.com/api/?name=Carlos+Lopez&background=6101eb&color=fff" class="user-avatar-small" alt="Usuario">
-                                    <span>Carlos López</span>
-                                </div>
+                                <?php if (!empty($logoMundialBase64)): ?>
+                                    <img src="data:image/jpeg;base64,<?php echo $logoMundialBase64; ?>" 
+                                         alt="<?php echo htmlspecialchars($mundial['Nombre']); ?>"
+                                         style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
+                                <?php endif; ?>
+                                <p><strong>Sede:</strong> <?php echo htmlspecialchars($mundial['Sede']); ?></p>
+                                <p><strong>Año:</strong> <?php echo $mundial['Anio']; ?></p>
+                                <p><strong>Publicaciones:</strong> <?php echo count($publicaciones); ?></p>
                             </div>
                         </div>
                     </div>
@@ -408,59 +435,58 @@ $sesionActiva = isset($_SESSION['usuario_id']);
     </section>
 
     <!-- MODAL CREAR PUBLICACIÓN -->
-    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <?php if ($sesionActiva): ?>
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createPostModalLabel">
-                        <i class="fas fa-plus-circle me-2"></i>Crear Nueva Publicación en Qatar 2022
+                        <i class="fas fa-plus-circle me-2"></i>Crear Nueva Publicación en <?php echo htmlspecialchars($mundial['Nombre']); ?>
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="createPostForm">
+                    <form action="../backend/api/publicaciones.php" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="accion" value="crear">
+                        <input type="hidden" name="id_mundial" value="<?php echo $idMundial; ?>">
+                        
                         <div class="mb-3">
-                            <label for="postTitle" class="form-label">Título de la Publicación *</label>
-                            <input type="text" class="form-control" id="postTitle" required placeholder="Ej: El mejor gol de Messi">
+                            <label for="titulo" class="form-label">Título de la Publicación *</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required 
+                                   placeholder="Ej: El mejor gol de Messi">
                         </div>
                         
                         <div class="mb-3">
-                            <label for="postDescription" class="form-label">Descripción *</label>
-                            <textarea class="form-control" id="postDescription" rows="4" required placeholder="Describe tu publicación..."></textarea>
+                            <label for="descripcion" class="form-label">Descripción *</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required 
+                                      placeholder="Describe tu publicación..."></textarea>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="categoriaSelect" class="form-label">Categoría *</label>
-                                <select class="form-select" id="categoriaSelect" required>
-                                    <option value="">Seleccione una categoría</option>
-                                    <option value="jugadas">⚽ Jugadas</option>
-                                    <option value="entrevistas">🎤 Entrevistas</option>
-                                    <option value="partidos">🏆 Partidos</option>
-                                    <option value="estadisticas">📊 Estadísticas</option>
-                                    <option value="sedes">📍 Sedes</option>
-                                    <option value="cultura">❤️ Cultura</option>
+                                <label for="categorias" class="form-label">Categorías</label>
+                                <select class="form-select" id="categorias" name="categorias[]" multiple size="4">
+                                    <?php foreach ($categorias as $categoria): ?>
+                                        <option value="<?php echo $categoria['id_Categoria']; ?>">
+                                            <?php echo htmlspecialchars($categoria['Nombre']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
+                                
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                <label for="seleccionSelect" class="form-label">Selección (Opcional)</label>
-                                <select class="form-select" id="seleccionSelect">
-                                    <option value="">Sin selección específica</option>
-                                    <option value="argentina">🇦🇷 Argentina</option>
-                                    <option value="francia">🇫🇷 Francia</option>
-                                    <option value="brasil">🇧🇷 Brasil</option>
-                                    <option value="alemania">🇩🇪 Alemania</option>
-                                    <option value="espana">🇪🇸 España</option>
-                                    <option value="portugal">🇵🇹 Portugal</option>
-                                </select>
+                                <label for="seleccion" class="form-label">Selección (Opcional)</label>
+                                <input type="text" class="form-control" id="seleccion" name="seleccion" 
+                                       placeholder="Ej: Argentina, Brasil...">
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="postImage" class="form-label">Imagen o Video *</label>
-                            <input type="file" class="form-control" id="postImage" accept="image/*,video/*" required>
-                            <small class="text-muted">Formatos aceptados: JPG, PNG, MP4, MOV (Máx. 10MB)</small>
+                            <label for="archivos" class="form-label">Imágenes o Videos</label>
+                            <input type="file" class="form-control" id="archivos" name="archivos[]" 
+                                   accept="image/*,video/*" multiple>
+                            <small class="text-muted">Formatos: JPG, PNG, MP4, MOV (Máx. 100MB por archivo)</small>
                         </div>
 
                         <div class="alert alert-info">
@@ -479,6 +505,7 @@ $sesionActiva = isset($_SESSION['usuario_id']);
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- FOOTER -->
     <footer class="footer pb-2 pt-4">
@@ -496,8 +523,107 @@ $sesionActiva = isset($_SESSION['usuario_id']);
         </div>
     </footer>
 
+    <!-- Bootstrap JS (DEBE IR PRIMERO) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Script inline para toggleComments y modal -->
+    <script>
+    // Función global para mostrar/ocultar comentarios
+    window.toggleComments = function(id) {
+        const commentsSection = document.getElementById(id);
+        if (commentsSection) {
+            if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+                commentsSection.style.display = 'block';
+            } else {
+                commentsSection.style.display = 'none';
+            }
+        }
+    };
+    
+    // Inicializar modal cuando Bootstrap esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof bootstrap === 'undefined') {
+            console.error('⚠️ Bootstrap no está cargado correctamente');
+            return;
+        }
+        
+        console.log('✅ Bootstrap 5 cargado correctamente');
+        
+        // Inicializar modal manualmente
+        const modalElement = document.getElementById('createPostModal');
+        const btnCreatePost = document.querySelector('.btn-create-post');
+        
+        if (modalElement && btnCreatePost) {
+            console.log('✅ Botón y modal encontrados');
+            
+            // DIAGNÓSTICO: Verificar propiedades del botón
+            const btnStyles = getComputedStyle(btnCreatePost);
+            console.log('📊 Propiedades del botón:', {
+                'z-index': btnStyles.zIndex,
+                'position': btnStyles.position,
+                'pointer-events': btnStyles.pointerEvents,
+                'display': btnStyles.display,
+                'visibility': btnStyles.visibility,
+                'opacity': btnStyles.opacity
+            });
+            
+            // DIAGNÓSTICO: Detectar qué elemento está en la posición del botón
+            const btnRect = btnCreatePost.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+            const elementAtPoint = document.elementFromPoint(btnCenterX, btnCenterY);
+            
+            console.log('🎯 Elemento en el centro del botón:', {
+                'elemento': elementAtPoint,
+                'clase': elementAtPoint?.className,
+                'es el botón?': elementAtPoint === btnCreatePost
+            });
+            
+            if (elementAtPoint !== btnCreatePost) {
+                console.warn('⚠️ HAY UN ELEMENTO BLOQUEANDO EL BOTÓN:', elementAtPoint);
+                console.warn('Propiedades del bloqueador:', {
+                    'z-index': getComputedStyle(elementAtPoint).zIndex,
+                    'position': getComputedStyle(elementAtPoint).position,
+                    'pointer-events': getComputedStyle(elementAtPoint).pointerEvents
+                });
+            }
+            
+            // Crear instancia del modal
+            const myModal = new bootstrap.Modal(modalElement, {
+                backdrop: true,
+                keyboard: true,
+                focus: true
+            });
+            
+            // Event listener en el botón (funcionará con Tab + Enter)
+            btnCreatePost.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🔘 Click detectado - Abriendo modal');
+                myModal.show();
+            });
+            
+            // WORKAROUND: Si hay un elemento bloqueador, agregar listener ahí también
+            if (elementAtPoint && elementAtPoint !== btnCreatePost) {
+                console.log('🔧 Aplicando workaround: agregando listener al bloqueador');
+                elementAtPoint.addEventListener('click', function(e) {
+                    // Verificar si el click fue sobre el área del botón
+                    const clickX = e.clientX;
+                    const clickY = e.clientY;
+                    
+                    if (clickX >= btnRect.left && clickX <= btnRect.right &&
+                        clickY >= btnRect.top && clickY <= btnRect.bottom) {
+                        console.log('🔘 Click redirigido al botón');
+                        myModal.show();
+                    }
+                });
+            }
+            
+            console.log('✅ Event listener configurado');
+        }
+    });
+    </script>
+    
+    <!-- Muro.js (OPCIONAL - solo para filtros visuales) -->
     <script src="assets/js/muro.js"></script>
 </body>
 </html>

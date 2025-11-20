@@ -24,26 +24,37 @@ class Multimedia {
      * @param string $file BLOB del archivo
      * @return int|false ID del archivo creado o false si falla
      */
-    public function crear($nombre_archivo, $file) {
-        try {
-            $stmt = $this->conn->prepare("CALL sp_multimedia_crear(?, ?)");
-            
-            // Bindear parámetros con tipos específicos
-            $stmt->bindParam(1, $nombre_archivo, PDO::PARAM_STR);
-            $stmt->bindParam(2, $file, PDO::PARAM_LOB);
-            
-            $stmt->execute();
-            
-            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stmt->closeCursor();
-            
-            return $resultado ? $resultado['id_Multimedia'] : false;
-            
-        } catch (PDOException $e) {
-            error_log("Error en crear(): " . $e->getMessage());
-            return false;
+public function crear($nombre_archivo, $file) {
+    try {
+        // SOLUCIÓN: Usar execute() directo en lugar de bindParam()
+        // PDO::PARAM_LOB tiene problemas conocidos con MySQL y archivos grandes
+        $stmt = $this->conn->prepare("CALL sp_multimedia_crear(?, ?)");
+        
+        // Ejecutar directamente pasando los parámetros en el array
+        // Esto permite que PDO maneje el BLOB correctamente sin tipo explícito
+        $stmt->execute([
+            $nombre_archivo,
+            $file
+        ]);
+        
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        
+        // Log de éxito para diagnóstico
+        if ($resultado) {
+            error_log("✅ Multimedia creado exitosamente - ID: " . $resultado['id_Multimedia'] . 
+                     " - Archivo: {$nombre_archivo} - Tamaño: " . strlen($file) . " bytes");
         }
+        
+        return $resultado ? $resultado['id_Multimedia'] : false;
+        
+    } catch (PDOException $e) {
+        // Log detallado del error
+        error_log("❌ Error en Multimedia::crear() - Archivo: {$nombre_archivo} - " . 
+                 "Tamaño: " . strlen($file) . " bytes - Error: " . $e->getMessage());
+        return false;
     }
+}
 
     /**
      * Obtener archivo multimedia por ID
