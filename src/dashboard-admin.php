@@ -773,7 +773,7 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
                                             </div>
 
                                             <form action="../backend/api/comentarios.php" method="POST" style="display: inline;">
-                                                <input type="hidden" name="accion" value="eliminar">
+                                                <input type="hidden" name="accion" value="eliminar_admin">
                                                 <input type="hidden" name="id_comentario" value="<?php echo $comentario['id_Comentario']; ?>">
                                                 <button type="submit" class="btn btn-danger btn-sm" 
                                                         onclick="return confirm('¿Estás seguro de eliminar este comentario?');">

@@ -92,6 +92,39 @@ class ComentarioController {
     }
 
     /**
+     * Eliminar comentario desde el dashboard admin (soft delete)
+     */
+    public function eliminarDesdeAdmin() {
+        $this->verificarAutenticacion();
+
+        // Verificar que sea administrador
+        if ($_SESSION['usuario_tipo'] != 1) {
+            header('Location: ../../src/dashboard-admin.php?seccion=comentarios&error=' . urlencode('Acceso denegado'));
+            exit();
+        }
+
+        // Validar que venga el ID
+        if (empty($_POST['id_comentario'])) {
+            header('Location: ../../src/dashboard-admin.php?seccion=comentarios&error=' . urlencode('ID de comentario requerido'));
+            exit();
+        }
+
+        $idComentario = intval($_POST['id_comentario']);
+        $idUsuario = $_SESSION['usuario_id'];
+        $esAdmin = true; // Siempre es admin en este método
+
+        // Eliminar comentario
+        $resultado = $this->comentarioModel->eliminar($idComentario, $idUsuario, $esAdmin);
+
+        if ($resultado) {
+            header('Location: ../../src/dashboard-admin.php?seccion=comentarios&success=' . urlencode('Comentario eliminado exitosamente'));
+        } else {
+            header('Location: ../../src/dashboard-admin.php?seccion=comentarios&error=' . urlencode('Error al eliminar el comentario'));
+        }
+        exit();
+    }
+
+    /**
      * Listar comentarios de una publicación
      * Retorna datos para mostrar en el muro
      */

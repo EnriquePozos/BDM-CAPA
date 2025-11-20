@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $comentarioController->eliminar();
             break;
             
+        case 'eliminar_admin':
+            $comentarioController->eliminarDesdeAdmin();
+            break;
+            
         default:
             header('Location: ../../src/mundiales.php?error=Acción no válida');
             exit();
