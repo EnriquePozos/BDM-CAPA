@@ -1107,6 +1107,6 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         }, 5000);
     });
     </script>
-    <script src="assets/js/dashboard-admin.js"></script>
+    <!-- <script src="assets/js/dashboard-admin.js"></script> -->
 </body>
 </html>

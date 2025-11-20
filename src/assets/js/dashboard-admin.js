@@ -56,148 +56,93 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ==================== PUBLICATION ACTIONS ====================
-    
-    // Approve publication
-    const approveButtons = document.querySelectorAll('.publication-actions .btn-success');
-    approveButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('¿Estás seguro de que deseas aprobar esta publicación?')) {
-                showNotification('Publicación aprobada exitosamente', 'success');
-                
-                // Update the card appearance
-                const card = this.closest('.publication-card');
-                card.classList.remove('pending');
-                card.classList.add('approved');
-                
-                const badge = card.querySelector('.status-badge');
-                badge.textContent = 'Aprobada';
-                badge.classList.remove('pending');
-                badge.classList.add('approved');
-                
-                // Update action buttons
-                const actionsDiv = this.closest('.publication-actions');
-                actionsDiv.innerHTML = `
-                    <button class="btn btn-info btn-sm">
-                        <i class="fas fa-eye"></i> Ver
-                    </button>
-                    <button class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Eliminar
-                    </button>
-                `;
-            }
-        });
-    });
-    
-    // Reject publication
-    const rejectButtons = document.querySelectorAll('.publication-actions .btn-danger');
-    rejectButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('¿Estás seguro de que deseas rechazar esta publicación?')) {
-                showNotification('Publicación rechazada', 'danger');
-                
-                const card = this.closest('.publication-card');
-                card.style.opacity = '0.5';
-                
-                setTimeout(() => {
-                    card.remove();
-                }, 500);
-            }
-        });
-    });
+    // ELIMINADO: Event listeners para aprobar/rechazar publicaciones
+    // Los formularios ahora se envían normalmente al backend sin interceptación de JavaScript
     
     // ==================== MUNDIAL STATUS TOGGLE ====================
-    const mundialToggles = document.querySelectorAll('#mundiales .form-check-input');
-    
-    mundialToggles.forEach(toggle => {
-        toggle.addEventListener('change', function() {
-            const label = this.nextElementSibling;
-            const row = this.closest('tr');
-            
-            if (this.checked) {
-                label.textContent = 'Activo';
-                label.classList.remove('status-inactive');
-                label.classList.add('status-active');
-                showNotification('Mundial activado correctamente', 'success');
-            } else {
-                label.textContent = 'Inactivo';
-                label.classList.remove('status-active');
-                label.classList.add('status-inactive');
-                showNotification('Mundial desactivado correctamente', 'warning');
-            }
+    const mundialSection = document.querySelector('#mundiales');
+    if (mundialSection) {
+        const mundialToggles = mundialSection.querySelectorAll('.form-check-input');
+        
+        mundialToggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                
+                if (!label) return; // Prevenir error si no hay label
+                
+                const row = this.closest('tr');
+                
+                if (this.checked) {
+                    label.textContent = 'Activo';
+                    label.classList.remove('status-inactive');
+                    label.classList.add('status-active');
+                    showNotification('Mundial activado correctamente', 'success');
+                } else {
+                    label.textContent = 'Inactivo';
+                    label.classList.remove('status-active');
+                    label.classList.add('status-inactive');
+                    showNotification('Mundial desactivado correctamente', 'warning');
+                }
+            });
         });
-    });
+    }
     
     // ==================== USER STATUS TOGGLE ====================
-    const userToggles = document.querySelectorAll('#usuarios .form-check-input');
-    
-    userToggles.forEach(toggle => {
-        toggle.addEventListener('change', function() {
-            const label = this.nextElementSibling;
-            const row = this.closest('tr');
-            
-            if (this.checked) {
-                label.textContent = 'Activo';
-                label.classList.remove('status-inactive');
-                label.classList.add('status-active');
-                showNotification('Usuario activado correctamente', 'success');
-            } else {
-                label.textContent = 'Inactivo';
-                label.classList.remove('status-active');
-                label.classList.add('status-inactive');
-                showNotification('Usuario desactivado correctamente', 'warning');
-            }
+    const usuariosSection = document.querySelector('#usuarios');
+    if (usuariosSection) {
+        const userToggles = usuariosSection.querySelectorAll('.form-check-input');
+        
+        userToggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                
+                if (!label) return; // Prevenir error si no hay label
+                
+                const row = this.closest('tr');
+                
+                if (this.checked) {
+                    label.textContent = 'Activo';
+                    label.classList.remove('status-inactive');
+                    label.classList.add('status-active');
+                    showNotification('Usuario activado correctamente', 'success');
+                } else {
+                    label.textContent = 'Inactivo';
+                    label.classList.remove('status-active');
+                    label.classList.add('status-inactive');
+                    showNotification('Usuario desactivado correctamente', 'warning');
+                }
+            });
         });
-    });
+    }
     
     // ==================== DELETE CATEGORY ====================
-    const deleteCategoryButtons = document.querySelectorAll('.category-actions .btn-danger');
-    
-    deleteCategoryButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const categoryCard = this.closest('.category-card');
-            const categoryName = categoryCard.querySelector('h5').textContent;
-            
-            if (confirm(`¿Estás seguro de que deseas eliminar la categoría "${categoryName}"?`)) {
-                categoryCard.style.transform = 'scale(0)';
-                categoryCard.style.opacity = '0';
+    const categoriasSection = document.querySelector('#categorias');
+    if (categoriasSection) {
+        const deleteCategoryButtons = categoriasSection.querySelectorAll('.category-actions .btn-danger');
+        
+        deleteCategoryButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
                 
-                setTimeout(() => {
-                    categoryCard.remove();
-                    showNotification('Categoría eliminada correctamente', 'success');
-                }, 300);
-            }
+                const categoryCard = this.closest('.category-card');
+                const categoryName = categoryCard.querySelector('h5').textContent;
+                
+                if (confirm(`¿Estás seguro de que deseas eliminar la categoría "${categoryName}"?`)) {
+                    categoryCard.style.transform = 'scale(0)';
+                    categoryCard.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        categoryCard.remove();
+                        showNotification('Categoría eliminada correctamente', 'success');
+                    }, 300);
+                }
+            });
         });
-    });
+    }
     
     // ==================== DELETE COMMENT ====================
-    const deleteCommentButtons = document.querySelectorAll('.comment-actions .btn-danger');
-    
-    deleteCommentButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
-                const commentItem = this.closest('.comment-item');
-                
-                commentItem.style.transform = 'translateX(-100%)';
-                commentItem.style.opacity = '0';
-                
-                setTimeout(() => {
-                    commentItem.remove();
-                    showNotification('Comentario eliminado correctamente', 'success');
-                }, 300);
-            }
-        });
-    });
+    // ELIMINADO: Event listeners para eliminar comentarios
+    // Los formularios ahora se envían normalmente al backend sin interceptación de JavaScript
     
     // ==================== FORM SELECT CHANGES ====================
     const filterSelects = document.querySelectorAll('.header-actions select, .section-header select');
@@ -324,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==================== CONSOLE LOG ====================
     console.log('%c Dashboard Admin Loaded Successfully! ', 'background: linear-gradient(135deg, #6101EB, #B604DC); color: white; font-size: 16px; padding: 10px; border-radius: 5px;');
     console.log('%c Navigation is handled by PHP with URL parameters', 'font-size: 12px; color: #6101EB;');
+    console.log('%c Formularios de publicaciones y comentarios funcionan sin interceptación JS', 'font-size: 12px; color: #28a745;');
     console.log('Keyboard Shortcuts:');
     console.log('Ctrl + F: Focus search');
     
