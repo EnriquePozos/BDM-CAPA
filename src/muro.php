@@ -259,7 +259,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                 ?>
                                 
                                 <!-- POST -->
-                                <div class="post-muro">
+                                <div class="post-muro" data-id-publicacion="<?php echo $publicacion['id_Publicacion']; ?>">
                                     <!-- Header del post -->
                                     <div class="post-header">
                                         <div class="post-author">
@@ -347,6 +347,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                             <i class="fas fa-comment"></i> 
                                             <?php echo is_array($comentarios) ? count($comentarios) : 0; ?> Comentarios
                                         </button>
+                                            <span class="action-info text-muted ms-3">
+                                            <i class="fas fa-eye"></i> 
+                                                <span class="views-count" data-publicacion-id="<?php echo $publicacion['id_Publicacion']; ?>">
+                                                <?php echo isset($publicacion['Views']) ? $publicacion['Views'] : 0; ?>
+                                            </span> vistas
+                                        </span>
                                     </div>
 
                                     <!-- Sección de comentarios -->
@@ -626,7 +632,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         }
     });
     </script>
-    
+    <script src="assets/js/vistaPublicacion.js"></script>
     <!-- Muro.js (OPCIONAL - solo para filtros visuales) -->
     <script src="assets/js/muro.js"></script>
 </body>
