@@ -26,9 +26,9 @@
     // Set para almacenar IDs de publicaciones ya vistas
     const publicacionesVistas = new Set();
 
-    // ==================== FUNCIONES AUXILIARES ====================
+    // ==================== FUNCIONES AUXILIARES ===================
     
-    /**
+    /** 
      * Log en consola (solo si debug está activado)
      */
     function log(mensaje, tipo = 'info', datos = null) {
