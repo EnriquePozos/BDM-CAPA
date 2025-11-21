@@ -73,6 +73,9 @@ if ($mundiales && is_array($mundiales)) {
 
 // Determinar qué sección mostrar
 $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
+
+// Detectar página actual para navbar
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 
 <!DOCTYPE html>
@@ -208,21 +211,22 @@ $seccionActiva = isset($_GET['seccion']) ? $_GET['seccion'] : 'overview';
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                    <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" href="index.php">
+                        <i class="fas fa-home me-1"></i>Inicio
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
+                    <a class="nav-link <?php echo ($currentPage == 'mundiales.php') ? 'active' : ''; ?>" href="mundiales.php">
+                        <i class="fas fa-globe me-1"></i>Mundiales
+                    </a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto" style="flex-direction: row;">
                 <li class="nav-item">
-                    <span class="nav-link text-primary fw-bold">
+                    <a class="nav-link text-primary fw-bold" href="dashboard-usuario.php" style="cursor: pointer;">
                         <i class="fas fa-user-circle me-1"></i>
                         <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>
-                    </span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link btn-outline-warning ms-2" href="dashboard-admin.php">

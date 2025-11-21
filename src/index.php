@@ -19,6 +19,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verificar si hay sesión activa
 $sesionActiva = isset($_SESSION['usuario_id']);
+
+// Detectar página actual para navbar
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
@@ -34,13 +37,14 @@ $sesionActiva = isset($_SESSION['usuario_id']);
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link active" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                    <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" href="index.php">
+                        <i class="fas fa-home me-1"></i>Inicio
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="galeria.php"><i class="fas fa-images me-1"></i>Galería</a>
+                    <a class="nav-link <?php echo ($currentPage == 'mundiales.php') ? 'active' : ''; ?>" href="mundiales.php">
+                        <i class="fas fa-globe me-1"></i>Mundiales
+                    </a>
                 </li>
             </ul>
             
@@ -48,10 +52,10 @@ $sesionActiva = isset($_SESSION['usuario_id']);
                 <?php if ($sesionActiva): ?>
                     <!-- Usuario CON sesión activa -->
                     <li class="nav-item">
-                        <span class="nav-link text-primary fw-bold">
+                        <a class="nav-link text-primary fw-bold" href="dashboard-usuario.php" style="cursor: pointer;">
                             <i class="fas fa-user-circle me-1"></i>
                             <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>
-                        </span>
+                        </a>
                     </li>
                     
                     <?php if ($_SESSION['usuario_tipo'] == 1): ?>
@@ -85,7 +89,6 @@ $sesionActiva = isset($_SESSION['usuario_id']);
         </div>
     </div>
 </nav>
-
     <!-- Hero Section -->
     <section class="hero-section" id="hero-section">
         <div class="hero-video">
@@ -139,9 +142,6 @@ $sesionActiva = isset($_SESSION['usuario_id']);
                         <div class="hero-buttons">
                             <a href="mundiales.php" class="btn btn-primary btn-lg me-3" style="background:#6101eb; color:#fff; border:none;">
                                 <i class="fas fa-play me-2"></i>Explorar Mundiales
-                            </a>
-                            <a href="galeria.php" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-images me-2"></i>Ver Galería
                             </a>
                         </div>
                     </div>

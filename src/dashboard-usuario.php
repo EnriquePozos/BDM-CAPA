@@ -32,6 +32,9 @@ foreach ($publicaciones as $pub) {
     if ($pub['Estatus'] == 'Aprobada') $publicacionesAprobadas++;
     if ($pub['Estatus'] == 'Pendiente') $publicacionesPendientes++;
 }
+
+// Detectar página actual para navbar
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,16 +62,32 @@ foreach ($publicaciones as $pub) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto" style="flex-direction: row; justify-content: center; width: 100%;">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php"><i class="fas fa-home me-1"></i>Inicio</a>
+                        <a class="nav-link <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>" href="index.php">
+                            <i class="fas fa-home me-1"></i>Inicio
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="mundiales.php"><i class="fas fa-globe me-1"></i>Mundiales</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="dashboard-usuario.php"><i class="fas fa-user me-1"></i>Mi Dashboard</a>
+                        <a class="nav-link <?php echo ($currentPage == 'mundiales.php') ? 'active' : ''; ?>" href="mundiales.php">
+                            <i class="fas fa-globe me-1"></i>Mundiales
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" style="flex-direction: row;">
+                    <li class="nav-item">
+                        <a class="nav-link text-primary fw-bold <?php echo ($currentPage == 'dashboard-usuario.php') ? 'active' : ''; ?>" href="dashboard-usuario.php" style="cursor: pointer;">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <?php echo htmlspecialchars($_SESSION['usuario_nombre']); ?>
+                        </a>
+                    </li>
+                    
+                    <?php if ($_SESSION['usuario_tipo'] == 1): ?>
+                        <li class="nav-item">
+                            <a class="nav-link btn-outline-warning ms-2" href="dashboard-admin.php">
+                                <i class="fas fa-user-shield me-1"></i>Panel Admin
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    
                     <li class="nav-item">
                         <a class="nav-link btn-danger text-white ms-2" href="../backend/api/auth.php?accion=logout">
                             <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
@@ -78,7 +97,6 @@ foreach ($publicaciones as $pub) {
             </div>
         </div>
     </nav>
-
     <!-- Dashboard Container -->
     <div class="dashboard-container">
         <div class="container">
