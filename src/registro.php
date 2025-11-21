@@ -144,44 +144,33 @@ if (session_status() === PHP_SESSION_NONE) {
                                         <div class="invalid-feedback">Por favor selecciona tu género</div>
                                     </div>
 
-                                    <!-- País de Nacimiento -->
-                                    <div class="col-md-6 mb-3">
-                                        <label for="paisNacimiento" class="form-label">
-                                            <i class="fas fa-globe-americas me-2"></i>País de Nacimiento *
-                                        </label>
-                                        <select class="form-select form-control-lg" name="pais_nacimiento" id="paisNacimiento" required>
-                                            <option value="">Seleccionar...</option>
-                                            <option value="Mexico">🇲🇽 México</option>
-                                            <option value="Argentina">🇦🇷 Argentina</option>
-                                            <option value="Brasil">🇧🇷 Brasil</option>
-                                            <option value="España">🇪🇸 España</option>
-                                            <option value="Colombia">🇨🇴 Colombia</option>
-                                            <option value="Chile">🇨🇱 Chile</option>
-                                            <option value="Peru">🇵🇪 Perú</option>
-                                            <option value="USA">🇺🇸 Estados Unidos</option>
-                                        </select>
-                                        <div class="invalid-feedback">Por favor selecciona tu país</div>
-                                    </div>
+<!-- País de Nacimiento -->
+<div class="col-md-6 mb-3">
+    <label for="pais_nacimiento" class="form-label">
+        <i class="fas fa-globe-americas me-2"></i>País de Nacimiento *
+    </label>
+    <select class="form-select form-control-lg" name="pais_nacimiento" id="pais_nacimiento" required>
+        <option value="">Cargando países...</option>
+    </select>
+    <small class="form-text text-muted">
+        <i class="fas fa-info-circle"></i> Selecciona tu país y se auto-completará tu nacionalidad
+    </small>
+    <div class="invalid-feedback">Por favor selecciona tu país</div>
+</div>
                                 </div>
 
-                                <!-- Nacionalidad -->
-                                <div class="form-group mb-3">
-                                    <label for="nacionalidad" class="form-label">
-                                        <i class="fas fa-flag me-2"></i>Nacionalidad *
-                                    </label>
-                                    <select class="form-select form-control-lg" name="nacionalidad" id="nacionalidad" required>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="Mexicana">🇲🇽 Mexicana</option>
-                                        <option value="Argentina">🇦🇷 Argentina</option>
-                                        <option value="Brasileña">🇧🇷 Brasileña</option>
-                                        <option value="Española">🇪🇸 Española</option>
-                                        <option value="Colombiana">🇨🇴 Colombiana</option>
-                                        <option value="Chilena">🇨🇱 Chilena</option>
-                                        <option value="Peruana">🇵🇪 Peruana</option>
-                                        <option value="Estadounidense">🇺🇸 Estadounidense</option>
-                                    </select>
-                                    <div class="invalid-feedback">Por favor selecciona tu nacionalidad</div>
-                                </div>
+<!-- Nacionalidad -->
+<div class="form-group mb-3">
+    <label for="nacionalidad" class="form-label">
+        <i class="fas fa-flag me-2"></i>Nacionalidad *
+    </label>
+    <input type="text" class="form-control form-control-lg" name="nacionalidad" id="nacionalidad" 
+           placeholder="Se completará automáticamente" readonly required>
+    <small class="form-text text-muted">
+        <i class="fas fa-magic"></i> Este campo se llena automáticamente al seleccionar tu país
+    </small>
+    <div class="invalid-feedback">Por favor selecciona un país primero</div>
+</div>
 
                                 <button type="button" class="btn btn-login btn-lg w-100" onclick="nextStep(2)">
                                     Siguiente <i class="fas fa-arrow-right ms-2"></i>
@@ -416,7 +405,8 @@ if (session_status() === PHP_SESSION_NONE) {
             <p class="mt-3 text-white">Creando tu cuenta...</p>
         </div>
     </div>
-
+    <!-- API de Países y Nacionalidades -->
+    <script src="assets/js/countries-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/registro.js"></script>
 </body>

@@ -327,21 +327,30 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                         </select>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="paisNacimiento" class="form-label">
-                                            <i class="fas fa-map-marker-alt"></i> País de Nacimiento *
-                                        </label>
-                                        <input type="text" class="form-control" id="paisNacimiento" name="pais_nacimiento" 
-                                               value="<?php echo htmlspecialchars($perfil['Pais_Nacimiento']); ?>" required>
-                                    </div>
+<div class="col-md-6 mb-3">
+    <label for="pais_nacimiento" class="form-label">
+        <i class="fas fa-map-marker-alt"></i> País de Nacimiento *
+    </label>
+    <select class="form-select" name="pais_nacimiento" id="pais_nacimiento" 
+            data-value="<?php echo isset($usuario['Pais_Nacimiento']) ? htmlspecialchars($usuario['Pais_Nacimiento']) : ''; ?>" required>
+        <option value="">Cargando países...</option>
+    </select>
+    <small class="form-text text-muted">
+        <i class="fas fa-info-circle"></i> Al cambiar el país, se actualizará tu nacionalidad
+    </small>
+</div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="nacionalidad" class="form-label">
-                                            <i class="fas fa-flag"></i> Nacionalidad *
-                                        </label>
-                                        <input type="text" class="form-control" id="nacionalidad" name="nacionalidad" 
-                                               value="<?php echo htmlspecialchars($perfil['Nacionalidad']); ?>" required>
-                                    </div>
+<div class="col-md-6 mb-3">
+    <label for="nacionalidad" class="form-label">
+        <i class="fas fa-flag"></i> Nacionalidad *
+    </label>
+    <input type="text" class="form-control" name="nacionalidad" id="nacionalidad" 
+           value="<?php echo isset($usuario['Nacionalidad']) ? htmlspecialchars($usuario['Nacionalidad']) : ''; ?>" 
+           placeholder="Se completará automáticamente" readonly required>
+    <small class="form-text text-muted">
+        <i class="fas fa-magic"></i> Este campo se actualiza automáticamente
+    </small>
+</div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="correoElectronico" class="form-label">
@@ -427,7 +436,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
     </footer>
-
+    <!-- API de Países y Nacionalidades -->
+    <script src="assets/js/countries-api.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/dashboard-usuario.js"></script>
 </body>
