@@ -47,14 +47,37 @@
     justify-content: center;
     margin: 0 auto 1rem;
     overflow: hidden;
+    position: relative;
 }
 
 .profile-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
+.profile-photo-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid #ddd;
+}
+
+.profile-photo-preview img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 .profile-name {
     font-family: var(--fwc-black);
     font-weight: 700;

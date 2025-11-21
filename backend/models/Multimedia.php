@@ -158,5 +158,25 @@ public function crear($nombre_archivo, $file) {
             return false;
         }
     }
+    /**
+     * Obtener primera imagen de una publicación
+     * @param int $id_publicacion
+     * @return array|false Array con datos de la imagen o false si no existe
+     */
+    public function obtenerPrimeraImagen($id_publicacion) {
+        try {
+            $stmt = $this->conn->prepare("CALL sp_publicacion_obtener_primera_imagen(?)");
+            $stmt->execute([$id_publicacion]);
+            
+            $imagen = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            
+            return $imagen ? $imagen : false;
+            
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPrimeraImagen(): " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

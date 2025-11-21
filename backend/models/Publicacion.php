@@ -187,5 +187,39 @@ class Publicacion {
             return false;
         }
     }
+
+
+    // MÉTODO PARA DASHBOARD DE USUARIO
+
+
+    /**
+     * Obtener publicaciones de un usuario con estadísticas completas
+     * Incluye: likes, comentarios, categorías, info del mundial
+     * 
+     * @param int $id_usuario ID del usuario
+     * @param string $filtro_estatus Filtro opcional: 'todas', 'Aprobada', 'Pendiente', 'Rechazada'
+     * @return array|false Array con publicaciones o false si hay error
+     */
+    public function obtenerPorUsuarioConStats($id_usuario, $filtro_estatus = 'todas') {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Llamar al stored procedure
+            $stmt = $conn->prepare("CALL sp_publicacion_obtener_por_usuario_stats(?, ?)");
+            $stmt->execute([$id_usuario, $filtro_estatus]);
+            
+            // Obtener resultados
+            $publicaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $publicaciones;
+            
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPorUsuarioConStats(): " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

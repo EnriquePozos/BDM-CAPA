@@ -188,5 +188,142 @@ class Usuario {
             return false;
         }
     }
+
+    // ==========================================
+    // MÉTODOS NUEVOS PARA DASHBOARD DE USUARIO
+    // ==========================================
+
+    /**
+     * Actualizar perfil del usuario autenticado
+     * NO actualiza correo ni tipo_usuario (solo el usuario puede modificar sus datos)
+     * 
+     * @param int $id_usuario ID del usuario
+     * @param array $datos Array con: nombre, foto (BLOB), pais_nacimiento, genero, nacionalidad, fecha_nacimiento
+     * @return bool True si éxito, false si error
+     */
+    public function actualizarPerfil($id_usuario, $datos) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Preparar llamada al stored procedure
+            // sp_usuario_actualizar_perfil(id, nombre, foto, pais, genero, nacionalidad, fecha_nac)
+            $stmt = $conn->prepare("CALL sp_usuario_actualizar_perfil(?, ?, ?, ?, ?, ?, ?)");
+            
+            // Bindear parámetros
+            $stmt->bindParam(1, $id_usuario, PDO::PARAM_INT);
+            $stmt->bindParam(2, $datos['nombre'], PDO::PARAM_STR);
+            $stmt->bindParam(3, $datos['foto'], PDO::PARAM_LOB);
+            $stmt->bindParam(4, $datos['pais_nacimiento'], PDO::PARAM_STR);
+            $stmt->bindParam(5, $datos['genero'], PDO::PARAM_STR);
+            $stmt->bindParam(6, $datos['nacionalidad'], PDO::PARAM_STR);
+            $stmt->bindParam(7, $datos['fecha_nacimiento'], PDO::PARAM_STR);
+            
+            // Ejecutar
+            $resultado = $stmt->execute();
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $resultado;
+            
+        } catch (PDOException $e) {
+            error_log("Error en actualizarPerfil(): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Cambiar contraseña del usuario
+     * Valida la contraseña actual antes de cambiarla
+     * 
+     * @param int $id_usuario ID del usuario
+     * @param string $contrasena_actual Contraseña actual sin hashear
+     * @param string $contrasena_nueva Nueva contraseña sin hashear
+     * @return bool True si éxito, false si error
+     */
+    public function cambiarContrasena($id_usuario, $contrasena_actual, $contrasena_nueva) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Preparar llamada al stored procedure
+            // sp_usuario_cambiar_contrasena(id, contrasena_actual, contrasena_nueva)
+            $stmt = $conn->prepare("CALL sp_usuario_cambiar_contrasena(?, ?, ?)");
+            
+            // Bindear parámetros
+            $stmt->bindParam(1, $id_usuario, PDO::PARAM_INT);
+            $stmt->bindParam(2, $contrasena_actual, PDO::PARAM_STR);
+            $stmt->bindParam(3, $contrasena_nueva, PDO::PARAM_STR);
+            
+            // Ejecutar
+            $resultado = $stmt->execute();
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $resultado;
+            
+        } catch (PDOException $e) {
+            error_log("Error en cambiarContrasena(): " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtener publicaciones del usuario con estadísticas completas
+     * Llama al stored procedure sp_usuario_obtener_publicaciones_stats
+     * 
+     * @param int $id_usuario ID del usuario
+     * @return array|false Array con publicaciones o false si hay error
+     */
+    public function obtenerPublicacionesConStats($id_usuario) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Llamar al stored procedure
+            $stmt = $conn->prepare("CALL sp_usuario_obtener_publicaciones_stats(?)");
+            $stmt->execute([$id_usuario]);
+            
+            // Obtener resultados
+            $publicaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $publicaciones;
+            
+        } catch (PDOException $e) {
+            error_log("Error en obtenerPublicacionesConStats(): " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Obtener estadísticas generales del usuario
+     * Llama al stored procedure sp_usuario_obtener_estadisticas
+     * 
+     * @param int $id_usuario ID del usuario
+     * @return array|false Array con estadísticas o false si hay error
+     */
+    public function obtenerEstadisticas($id_usuario) {
+        try {
+            $conn = $this->db->getConnection();
+            
+            // Llamar al stored procedure
+            $stmt = $conn->prepare("CALL sp_usuario_obtener_estadisticas(?)");
+            $stmt->execute([$id_usuario]);
+            
+            // Obtener resultado
+            $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Cerrar cursor
+            $stmt->closeCursor();
+            
+            return $estadisticas ? $estadisticas : false;
+            
+        } catch (PDOException $e) {
+            error_log("Error en obtenerEstadisticas(): " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
